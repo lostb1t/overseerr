@@ -129,6 +129,8 @@ userSettingsRoutes.post<
       user.settings.watchlistSyncTv = req.body.watchlistSyncTv;
     }
 
+    user.settings.watchlistRSS = req.body.watchlistRSS;
+
     await userRepository.save(user);
 
     return res.status(200).json({
