@@ -65,6 +65,7 @@ userSettingsRoutes.get<{ id: string }, UserSettingsGeneralResponse>(
         globalTvQuotaLimit: defaultQuotas.tv.quotaLimit,
         watchlistSyncMovies: user.settings?.watchlistSyncMovies,
         watchlistSyncTv: user.settings?.watchlistSyncTv,
+        watchlistRSS: user.settings?.watchlistRSS,
       });
     } catch (e) {
       next({ status: 500, message: e.message });
