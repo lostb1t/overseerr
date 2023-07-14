@@ -92,23 +92,15 @@ export const startJobs = (): void => {
     id: 'plex-watchlist-feed-sync',
     name: 'Plex Watchlist Feed Sync',
     type: 'process',
-    interval: 'fixed',
+    interval: 'minutes',
     cronSchedule: jobs['plex-watchlist-feed-sync'].schedule,
-    job: schedule.scheduleJob(new Date(Date.now() + 1000 * 60 * 20), () => {
+    job: schedule.scheduleJob(jobs['plex-watchlist-feed-sync'].schedule, () => {
       logger.info('Starting scheduled job: Plex Watchlist Feed Sync', {
         label: 'Jobs',
       });
       watchlistFeedSync.syncWatchlist();
     }),
   };
-
-  // To help alleviate load on Plex's servers, we will add some fuzziness to the next schedule
-  // after each run
-  watchlistFeedSyncJob.job.on('run', () => {
-    watchlistFeedSyncJob.job.schedule(
-      new Date(Math.floor(Date.now() + 1000 * 60 * random(14, 24, true)))
-    );
-  });
 
   scheduledJobs.push(watchlistFeedSyncJob);
 
