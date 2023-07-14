@@ -70,8 +70,8 @@ router.get<unknown, StatusResponse>('/status', async (req, res) => {
 
     if (releases.length) {
       const latestVersion = releases[0];
-
-      if (!latestVersion.name.includes(currentVersion)) {
+      const name = `${latestVersion.name}-blackbeard`;
+      if (!name.includes(currentVersion)) {
         updateAvailable = true;
       }
     }
