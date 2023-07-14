@@ -68,6 +68,15 @@ class WatchlistFeedSync {
       return;
     }
 
+    const head = await axios.head(user.watchlist.url);
+
+    if (user.watchlist.etag) {
+      if (head.headers.etag === user.watchlist.etag) {
+        logger.debug('Etag matches, doing nothing');
+        return;
+      }
+    }
+
     const response = await this.getWatchlist(user.watchlist.url);
 
     const mediaItems = await Media.getRelatedMedia(
@@ -161,6 +170,10 @@ class WatchlistFeedSync {
         }
       })
     );
+
+    const userRepository = getRepository(User);
+    user.watchlist.etag = head.headers.etag;
+    userRepository.save(user);
   }
   public async getWatchlist(url: string): Promise<{
     items: PlexWatchlistItem[];
