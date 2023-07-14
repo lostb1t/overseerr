@@ -176,18 +176,17 @@ class WatchlistFeedSync {
   }> {
     try {
       const response = await axios.get(url);
+      const response_items = response.data.items;
+      let next = response.data.links.next ?? null;
 
-      // const guids = response.data.items.map(item => {
-      //   // let guids = {};
-      //   for (const guid in item.guids) {
-      //     const s = guid.split('//');
-      //     // guids[s[0]] = s[1];
-      //     guids[s[0]] = s[1];
-      //   }
-      // };
-      // data.links.next
+      while (next) {
+        const response = await axios.get(next);
+        next = response.data.links.next ?? null;
+        response_items.push(response.data.items);
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const items = response.data.items.map(
+      const items = response_items.map(
         (item: { title: any; category: any; guids: any }) => {
           const guids = {} as any;
           for (const i in item.guids) {
@@ -196,7 +195,6 @@ class WatchlistFeedSync {
             // console.log(guid);
             guids[s[0]] = s[1];
           }
-          console.log(guids);
 
           return {
             tmdbId: guids['tmdb'] ?? 0,
@@ -206,7 +204,6 @@ class WatchlistFeedSync {
           };
         }
       );
-      console.log(items);
       //   const guids = item.map(item => {
 
       //   {
