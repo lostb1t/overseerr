@@ -58,6 +58,7 @@ const messages = defineMessages({
   watchlistUrl: 'Watchlists',
   watchlistUrldescription:
     'You can find your feed <PlexWatchlistFeedLink>here</PlexWatchlistFeedLink>',
+  validationWatchlistUrl: 'You must provide a valid url',
 });
 
 const UserGeneralSettings = () => {
@@ -88,6 +89,9 @@ const UserGeneralSettings = () => {
     discordId: Yup.string()
       .nullable()
       .matches(/^\d{17,19}$/, intl.formatMessage(messages.validationDiscordId)),
+    watchlistUrl: Yup.string()
+      .nullable()
+      .url(intl.formatMessage(messages.validationWatchlistUrl)),
   });
 
   useEffect(() => {
