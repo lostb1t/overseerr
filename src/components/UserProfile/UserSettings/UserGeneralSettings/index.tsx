@@ -56,7 +56,8 @@ const messages = defineMessages({
   plexwatchlistsyncseriestip:
     'Automatically request series on your <PlexWatchlistSupportLink>Plex Watchlist</PlexWatchlistSupportLink>',
   watchlistUrl: 'Watchlists',
-  watchlistUrldescription: 'Comma seperated lists of RSS feeds',
+  watchlistUrldescription:
+    'You can find your feed <PlexWatchlistFeedLink>here</PlexWatchlistFeedLink>',
 });
 
 const UserGeneralSettings = () => {
@@ -510,7 +511,18 @@ const UserGeneralSettings = () => {
                     <label htmlFor="watchlistUrl" className="text-label">
                       <span>{intl.formatMessage(messages.watchlistUrl)}</span>
                       <span className="label-tip">
-                        {intl.formatMessage(messages.watchlistUrldescription)}
+                        {intl.formatMessage(messages.watchlistUrldescription, {
+                          PlexWatchlistFeedLink: (msg: React.ReactNode) => (
+                            <a
+                              href="https://app.plex.tv/desktop/#!/settings/watchlist"
+                              className="text-white transition duration-300 hover:underline"
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {msg}
+                            </a>
+                          ),
+                        })}
                       </span>
                     </label>
                     <div className="form-input-area">

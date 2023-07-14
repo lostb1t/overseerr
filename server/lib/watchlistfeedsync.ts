@@ -21,15 +21,6 @@ export interface PlexWatchlistItem {
   title: string;
 }
 
-// interface WatchlistResponse {
-//   MediaContainer: {
-//     totalSize: number;
-//     Metadata?: {
-//       ratingKey: string;
-//     }[];
-//   };
-// }
-
 class WatchlistFeedSync {
   public async syncWatchlist() {
     const userRepository = getRepository(User);
@@ -37,9 +28,9 @@ class WatchlistFeedSync {
     // Get users who actually have plex tokens
     const users = await userRepository
       .createQueryBuilder('user')
-      .addSelect('user.watchlist')
+      .leftJoinAndSelect('user.watchlist', 'watchlist')
       .leftJoinAndSelect('user.settings', 'settings')
-      .where("user.watchlist.url != ''")
+      // .where("user.watchlist.url != ''") # TODO: FIX
       .getMany();
 
     for (const user of users) {

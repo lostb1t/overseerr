@@ -87,7 +87,7 @@ export const startJobs = (): void => {
 
   scheduledJobs.push(watchlistSyncJob);
 
-  // Watchlist Sync
+  // Watchlist Feed Sync
   const watchlistFeedSyncJob: ScheduledJob = {
     id: 'plex-watchlist-feed-sync',
     name: 'Plex Watchlist Feed Sync',
