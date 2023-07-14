@@ -30,7 +30,7 @@ class WatchlistFeedSync {
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.watchlist', 'watchlist')
       .leftJoinAndSelect('user.settings', 'settings')
-      // .where("user.watchlist.url != ''") # TODO: FIX
+      .where("watchlist.url != ''")
       .getMany();
 
     for (const user of users) {
