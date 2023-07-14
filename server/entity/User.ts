@@ -1,6 +1,7 @@
 import { MediaRequestStatus, MediaType } from '@server/constants/media';
 import { UserType } from '@server/constants/user';
 import { getRepository } from '@server/datasource';
+import { UserWatchlist } from '@server/entity/UserWatchlist';
 import type { QuotaResponse } from '@server/interfaces/api/userInterfaces';
 import PreparedEmail from '@server/lib/email';
 import type { PermissionCheckOptions } from '@server/lib/permissions';
@@ -121,6 +122,13 @@ export class User {
 
   @UpdateDateColumn()
   public updatedAt: Date;
+
+  @OneToOne(() => UserWatchlist, (watchlist) => watchlist.user, {
+    cascade: true,
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  public watchlist?: UserWatchlist;
 
   constructor(init?: Partial<User>) {
     Object.assign(this, init);

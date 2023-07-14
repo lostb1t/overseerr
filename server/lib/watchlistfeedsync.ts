@@ -37,9 +37,9 @@ class WatchlistFeedSync {
     // Get users who actually have plex tokens
     const users = await userRepository
       .createQueryBuilder('user')
-      // .addSelect('user.watchlist')
+      .addSelect('user.watchlist')
       .leftJoinAndSelect('user.settings', 'settings')
-      // .where("user.settings.watchlistRSS != ''")
+      .where("user.watchlist.url != ''")
       .getMany();
 
     for (const user of users) {
@@ -48,7 +48,7 @@ class WatchlistFeedSync {
   }
 
   private async syncUserWatchlist(user: User) {
-    if (!user.settings?.watchlistRSS) {
+    if (!user.watchlist?.url) {
       logger.warn('Skipping user watchlist feed sync for user without feed', {
         label: 'Plex Watchlist Feed Sync',
         user: user.displayName,
@@ -77,7 +77,7 @@ class WatchlistFeedSync {
       return;
     }
 
-    const response = await this.getWatchlist(user.settings.watchlistRSS);
+    const response = await this.getWatchlist(user.watchlist.url);
 
     const mediaItems = await Media.getRelatedMedia(
       response.items.map((i) => i.tmdbId)
@@ -204,66 +204,8 @@ class WatchlistFeedSync {
           };
         }
       );
-      //   const guids = item.map(item => {
 
-      //   {
-
-      //               tmdbId: item.guidstmdbString ? Number(tmdbString.id.split('//')[1]) : 0,
-      //               tvdbId: tvdbString
-      //                 ? Number(tvdbString.id.split('//')[1])
-      //                 : undefined,
-      //               title: metadata.title,
-      //               type: metadata.type,
-      //             };
-      // }
-
-      // );
-      // console.log(response.data.items);
-      // for (const item of response.data.items) {
-      // };
       return { items };
-      //   const watchlistDetails = await Promise.all(
-      //     (response.data.MediaContainer.Metadata ?? []).map(
-      //       async (watchlistItem) => {
-      //         const detailedResponse = await this.getRolling<MetadataResponse>(
-      //           `/library/metadata/${watchlistItem.ratingKey}`,
-      //           {
-      //             baseURL: 'https://metadata.provider.plex.tv',
-      //           }
-      //         );
-
-      //         const metadata = detailedResponse.MediaContainer.Metadata[0];
-
-      //         const tmdbString = metadata.Guid.find((guid) =>
-      //           guid.id.startsWith('tmdb')
-      //         );
-      //         const tvdbString = metadata.Guid.find((guid) =>
-      //           guid.id.startsWith('tvdb')
-      //         );
-
-      //         return {
-      //           ratingKey: metadata.ratingKey,
-      //           // This should always be set? But I guess it also cannot be?
-      //           // We will filter out the 0's afterwards
-      //           tmdbId: tmdbString ? Number(tmdbString.id.split('//')[1]) : 0,
-      //           tvdbId: tvdbString
-      //             ? Number(tvdbString.id.split('//')[1])
-      //             : undefined,
-      //           title: metadata.title,
-      //           type: metadata.type,
-      //         };
-      //       }
-      //     )
-      //   );
-
-      //   const filteredList = watchlistDetails.filter((detail) => detail.tmdbId);
-
-      //   return {
-      //     offset,
-      //     size,
-      //     totalSize: response.data.MediaContainer.totalSize,
-      //     items: filteredList,
-      //   };
     } catch (e) {
       logger.error('Failed to retrieve watchlist items', {
         label: 'Plex.TV Metadata API',

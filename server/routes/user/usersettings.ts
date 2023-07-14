@@ -1,6 +1,7 @@
 import { getRepository } from '@server/datasource';
 import { User } from '@server/entity/User';
 import { UserSettings } from '@server/entity/UserSettings';
+import { UserWatchlist } from '@server/entity/UserWatchlist';
 import type {
   UserSettingsGeneralResponse,
   UserSettingsNotificationsResponse,
@@ -65,7 +66,7 @@ userSettingsRoutes.get<{ id: string }, UserSettingsGeneralResponse>(
         globalTvQuotaLimit: defaultQuotas.tv.quotaLimit,
         watchlistSyncMovies: user.settings?.watchlistSyncMovies,
         watchlistSyncTv: user.settings?.watchlistSyncTv,
-        watchlistRSS: user.settings?.watchlistRSS,
+        watchlistUrl: user.watchlist?.url,
       });
     } catch (e) {
       next({ status: 500, message: e.message });
@@ -129,7 +130,10 @@ userSettingsRoutes.post<
       user.settings.watchlistSyncTv = req.body.watchlistSyncTv;
     }
 
-    user.settings.watchlistRSS = req.body.watchlistRSS;
+    if (!user.watchlist) {
+      user.watchlist = new UserWatchlist();
+    }
+    user.watchlist.url = req.body.watchlistUrl;
 
     await userRepository.save(user);
 

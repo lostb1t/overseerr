@@ -55,8 +55,8 @@ const messages = defineMessages({
   plexwatchlistsyncseries: 'Auto-Request Series',
   plexwatchlistsyncseriestip:
     'Automatically request series on your <PlexWatchlistSupportLink>Plex Watchlist</PlexWatchlistSupportLink>',
-  watchlistRSS: 'Watchlists',
-  watchlistRSSdescription: 'Comma seperated lists of RSS feeds',
+  watchlistUrl: 'Watchlists',
+  watchlistUrldescription: 'Comma seperated lists of RSS feeds',
 });
 
 const UserGeneralSettings = () => {
@@ -132,7 +132,7 @@ const UserGeneralSettings = () => {
           tvQuotaDays: data?.tvQuotaDays,
           watchlistSyncMovies: data?.watchlistSyncMovies,
           watchlistSyncTv: data?.watchlistSyncTv,
-          watchlistRSS: data?.watchlistRSS,
+          watchlistUrl: data?.watchlistUrl,
         }}
         validationSchema={UserGeneralSettingsSchema}
         enableReinitialize
@@ -152,7 +152,7 @@ const UserGeneralSettings = () => {
               tvQuotaDays: tvQuotaEnabled ? values.tvQuotaDays : null,
               watchlistSyncMovies: values.watchlistSyncMovies,
               watchlistSyncTv: values.watchlistSyncTv,
-              watchlistRSS: values.watchlistRSS,
+              watchlistUrl: values.watchlistUrl,
             });
 
             if (currentUser?.id === user?.id && setLocale) {
@@ -507,25 +507,25 @@ const UserGeneralSettings = () => {
               {hasPermission([Permission.AUTO_REQUEST]) &&
                 user?.userType === UserType.LOCAL && (
                   <div className="form-row">
-                    <label htmlFor="watchlistRSS" className="text-label">
-                      <span>{intl.formatMessage(messages.watchlistRSS)}</span>
+                    <label htmlFor="watchlistUrl" className="text-label">
+                      <span>{intl.formatMessage(messages.watchlistUrl)}</span>
                       <span className="label-tip">
-                        {intl.formatMessage(messages.watchlistRSSdescription)}
+                        {intl.formatMessage(messages.watchlistUrldescription)}
                       </span>
                     </label>
                     <div className="form-input-area">
                       <div className="form-input-field">
                         <Field
-                          id="watchlistRSS"
-                          name="watchlistRSS"
+                          id="watchlistUrl"
+                          name="watchlistUrl"
                           type="text"
-                          placeholder={values.watchlistRSS}
+                          placeholder={values.watchlistUrl}
                         />
                       </div>
-                      {errors.watchlistRSS &&
-                        touched.watchlistRSS &&
-                        typeof errors.watchlistRSS === 'string' && (
-                          <div className="error">{errors.watchlistRSS}</div>
+                      {errors.watchlistUrl &&
+                        touched.watchlistUrl &&
+                        typeof errors.watchlistUrl === 'string' && (
+                          <div className="error">{errors.watchlistUrl}</div>
                         )}
                     </div>
                   </div>

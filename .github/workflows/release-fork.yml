@@ -39,4 +39,4 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ghcr.io/sarendsen/overseerr:latest
+            ghcr.io/sarendsen/overseerr:blackbeard
