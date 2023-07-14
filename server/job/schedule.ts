@@ -6,6 +6,7 @@ import { radarrScanner } from '@server/lib/scanners/radarr';
 import { sonarrScanner } from '@server/lib/scanners/sonarr';
 import type { JobId } from '@server/lib/settings';
 import { getSettings } from '@server/lib/settings';
+import watchlistFeedSync from '@server/lib/watchlistfeedsync';
 import watchlistSync from '@server/lib/watchlistsync';
 import logger from '@server/logger';
 import random from 'lodash/random';
@@ -85,6 +86,31 @@ export const startJobs = (): void => {
   });
 
   scheduledJobs.push(watchlistSyncJob);
+
+  // Watchlist Sync
+  const watchlistFeedSyncJob: ScheduledJob = {
+    id: 'plex-watchlist-feed-sync',
+    name: 'Plex Watchlist Feed Sync',
+    type: 'process',
+    interval: 'fixed',
+    cronSchedule: jobs['plex-watchlist-feed-sync'].schedule,
+    job: schedule.scheduleJob(new Date(Date.now() + 1000 * 60 * 20), () => {
+      logger.info('Starting scheduled job: Plex Watchlist Feed Sync', {
+        label: 'Jobs',
+      });
+      watchlistFeedSync.syncWatchlist();
+    }),
+  };
+
+  // To help alleviate load on Plex's servers, we will add some fuzziness to the next schedule
+  // after each run
+  watchlistFeedSyncJob.job.on('run', () => {
+    watchlistFeedSyncJob.job.schedule(
+      new Date(Math.floor(Date.now() + 1000 * 60 * random(14, 24, true)))
+    );
+  });
+
+  scheduledJobs.push(watchlistFeedSyncJob);
 
   // Run full radarr scan every 24 hours
   scheduledJobs.push({
