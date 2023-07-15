@@ -3,11 +3,11 @@ name: Overseerr Blackbeard Release
 on:
   push:
     branches:
-      # - master
-      - feature/blackbeard
+      - master
+      # - feature/blackbeard
 
 jobs:
-  semantic-release:
+  release:
     name: Tag and release latest version
     runs-on: ubuntu-20.04
     env:
@@ -31,6 +31,9 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.PERSONAL_TOKEN }}
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
@@ -38,5 +41,8 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
+          build-args: |
+            COMMIT_TAG=${{ github.sha }}
           tags: |
-            ghcr.io/sarendsen/overseerr:blackbeard
+            ghcr.io/sarendsen/overseerr:latest
+            ghcr.io/sarendsen/overseerr:${{ steps.package-version.outputs.current-version}}
