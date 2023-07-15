@@ -55,7 +55,7 @@ jobs:
           tags: |
             ghcr.io/sarendsen/overseerr:latest
             ghcr.io/sarendsen/overseerr:${{ env.VERSION}}
-      - name: Bump version and push tag
+      - name: Push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.1
         with:
