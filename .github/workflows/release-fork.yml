@@ -46,7 +46,7 @@ jobs:
       #     VERSION: ${{ steps.package-version.outputs.current-version}}.${{ steps.short-sha.outputs.sha }}
       - name: Save version to image
         run: |
-          echo "{\"version\": \"${{ env.VERSION }}-blackbeard\"}" >> version.json
+          echo '{"version": "${{ env.VERSION }}-blackbeard"}'' >> version.json
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
