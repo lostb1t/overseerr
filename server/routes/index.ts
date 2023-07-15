@@ -71,15 +71,14 @@ router.get<unknown, StatusResponse>('/status', async (req, res) => {
     if (commits.length) {
       const latestCommit = commits[0];
 
-      if (!currentVersion.includes(latestCommit.sha)) {
+      if (!currentVersion.includes(latestCommit.sha.slice(0, 6))) {
         updateAvailable = true;
       }
     }
   }
-
   return res.status(200).json({
-    version: getAppVersion(),
-    commitTag: getCommitTag(),
+    version: currentVersion,
+    commitTag: commitTag,
     updateAvailable,
     commitsBehind,
     restartRequired: restartFlag.isSet(),
