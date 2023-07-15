@@ -183,7 +183,7 @@ class WatchlistFeedSync extends ExternalAPI {
       const path = url.replace('https://rss.plex.tv', '');
       const response: any = await this.getRolling(path, undefined, 300);
 
-      const response_items = response.items;
+      let response_items = response.items;
 
       let next = response.links.next ?? null;
 
@@ -192,7 +192,7 @@ class WatchlistFeedSync extends ExternalAPI {
         const path = next.replace('https://rss.plex.tv', '');
         const response: any = await this.getRolling(path, undefined, 300);
         next = response.links.next ?? null;
-        response_items.push(response.items);
+        response_items = response_items.concat(response.items);
       }
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
