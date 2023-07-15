@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import cacheManager from '@server/lib/cache';
 import logger from '@server/logger';
 import ExternalAPI from './externalapi';
@@ -123,6 +124,28 @@ class GithubAPI extends ExternalAPI {
     } catch (e) {
       logger.warn(
         "Failed to retrieve GitHub commits. This may be an issue on GitHub's end. Overseerr can't check if it's on the latest version.",
+        { label: 'GitHub API', errorMessage: e.message }
+      );
+      return [];
+    }
+  }
+
+  public async getOverseerrTags({
+    take = 20,
+  }: {
+    take?: number;
+  } = {}): Promise<any> {
+    try {
+      const data = await this.get<any>('/repos/sarendsen/overseerr/tags', {
+        params: {
+          per_page: take,
+        },
+      });
+
+      return data;
+    } catch (e) {
+      logger.warn(
+        "Failed to retrieve GitHub tags. This may be an issue on GitHub's end. Overseerr can't check if it's on the latest version.",
         { label: 'GitHub API', errorMessage: e.message }
       );
       return [];

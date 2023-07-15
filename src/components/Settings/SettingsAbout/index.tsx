@@ -123,7 +123,7 @@ const SettingsAbout = () => {
                   href={
                     data.version.startsWith('develop-')
                       ? 'https://github.com/sct/overseerr/commits/develop'
-                      : 'https://github.com/sct/overseerr/releases'
+                      : 'https://github.com/users/sarendsen/packages/container/package/overseerr'
                   }
                   target="_blank"
                   rel="noopener noreferrer"

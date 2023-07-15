@@ -66,12 +66,12 @@ router.get<unknown, StatusResponse>('/status', async (req, res) => {
       }
     }
   } else if (commitTag !== 'local') {
-    const releases = await githubApi.getOverseerrReleases();
+    const commits = await githubApi.getOverseerrCommits();
 
-    if (releases.length) {
-      const latestVersion = releases[0];
+    if (commits.length) {
+      const latestCommit = commits[0];
 
-      if (!currentVersion.includes(latestVersion.name)) {
+      if (!currentVersion.includes(latestCommit.sha)) {
         updateAvailable = true;
       }
     }
