@@ -1,10 +1,10 @@
 name: Overseerr Blackbeard Release
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
-      # - feature/blackbeard
 
 jobs:
   release:
