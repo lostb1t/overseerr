@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ExternalAPI from '@server/api/externalapi';
 import { MediaStatus, MediaType } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
@@ -195,7 +196,6 @@ class WatchlistFeedSync extends ExternalAPI {
         response_items = response_items.concat(response.items);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const items = response_items.map(
         (item: { title: any; category: any; guids: any }) => {
           const guids = {} as any;
