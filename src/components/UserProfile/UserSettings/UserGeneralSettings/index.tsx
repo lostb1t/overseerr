@@ -5,6 +5,7 @@ import PageTitle from '@app/components/Common/PageTitle';
 import LanguageSelector from '@app/components/LanguageSelector';
 import QuotaSelector from '@app/components/QuotaSelector';
 import RegionSelector from '@app/components/RegionSelector';
+import Auth from '@app/components/UserProfile/UserSettings/UserGeneralSettings/plexauth';
 import type { AvailableLocale } from '@app/context/LanguageContext';
 import { availableLanguages } from '@app/context/LanguageContext';
 import useLocale from '@app/hooks/useLocale';
@@ -544,6 +545,13 @@ const UserGeneralSettings = () => {
                           <div className="error">{errors.watchlistUrl}</div>
                         )}
                     </div>
+                  </div>
+                )}
+
+              {hasPermission([Permission.AUTO_REQUEST]) &&
+                user?.userType === UserType.LOCAL && (
+                  <div className="form-row">
+                    <Auth />
                   </div>
                 )}
               <div className="actions">
