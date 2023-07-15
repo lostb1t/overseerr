@@ -245,6 +245,7 @@ export type JobId =
   | 'plex-recently-added-scan'
   | 'plex-full-scan'
   | 'plex-watchlist-sync'
+  | 'plex-watchlist-feed-sync'
   | 'radarr-scan'
   | 'sonarr-scan'
   | 'download-sync'
@@ -403,6 +404,9 @@ class Settings {
           schedule: '0 0 3 * * *',
         },
         'plex-watchlist-sync': {
+          schedule: '0 */10 * * * *',
+        },
+        'plex-watchlist-feed-sync': {
           schedule: '0 */10 * * * *',
         },
         'radarr-scan': {

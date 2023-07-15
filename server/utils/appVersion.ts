@@ -19,7 +19,7 @@ export const getAppVersion = (): string => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { version } = require('../../package.json');
 
-  let finalVersion = version;
+  let finalVersion = `${version}-blackbeard`;
 
   if (version === '0.1.0') {
     finalVersion = `develop-${getCommitTag()}`;

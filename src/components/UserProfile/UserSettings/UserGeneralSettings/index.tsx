@@ -55,6 +55,10 @@ const messages = defineMessages({
   plexwatchlistsyncseries: 'Auto-Request Series',
   plexwatchlistsyncseriestip:
     'Automatically request series on your <PlexWatchlistSupportLink>Plex Watchlist</PlexWatchlistSupportLink>',
+  watchlistUrl: 'Watchlists',
+  watchlistUrldescription:
+    'You can find your feed <PlexWatchlistFeedLink>here</PlexWatchlistFeedLink>',
+  validationWatchlistUrl: 'You must provide a valid url',
 });
 
 const UserGeneralSettings = () => {
@@ -85,6 +89,9 @@ const UserGeneralSettings = () => {
     discordId: Yup.string()
       .nullable()
       .matches(/^\d{17,19}$/, intl.formatMessage(messages.validationDiscordId)),
+    watchlistUrl: Yup.string()
+      .nullable()
+      .url(intl.formatMessage(messages.validationWatchlistUrl)),
   });
 
   useEffect(() => {
@@ -130,6 +137,7 @@ const UserGeneralSettings = () => {
           tvQuotaDays: data?.tvQuotaDays,
           watchlistSyncMovies: data?.watchlistSyncMovies,
           watchlistSyncTv: data?.watchlistSyncTv,
+          watchlistUrl: data?.watchlistUrl,
         }}
         validationSchema={UserGeneralSettingsSchema}
         enableReinitialize
@@ -149,6 +157,7 @@ const UserGeneralSettings = () => {
               tvQuotaDays: tvQuotaEnabled ? values.tvQuotaDays : null,
               watchlistSyncMovies: values.watchlistSyncMovies,
               watchlistSyncTv: values.watchlistSyncTv,
+              watchlistUrl: values.watchlistUrl,
             });
 
             if (currentUser?.id === user?.id && setLocale) {
@@ -422,93 +431,118 @@ const UserGeneralSettings = () => {
               {hasPermission(
                 [Permission.AUTO_REQUEST, Permission.AUTO_REQUEST_MOVIE],
                 { type: 'or' }
-              ) &&
-                user?.userType === UserType.PLEX && (
-                  <div className="form-row">
-                    <label
-                      htmlFor="watchlistSyncMovies"
-                      className="checkbox-label"
-                    >
-                      <span>
-                        {intl.formatMessage(messages.plexwatchlistsyncmovies)}
-                      </span>
-                      <span className="label-tip">
-                        {intl.formatMessage(
-                          messages.plexwatchlistsyncmoviestip,
-                          {
-                            PlexWatchlistSupportLink: (
-                              msg: React.ReactNode
-                            ) => (
-                              <a
-                                href="https://support.plex.tv/articles/universal-watchlist/"
-                                className="text-white transition duration-300 hover:underline"
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                {msg}
-                              </a>
-                            ),
-                          }
-                        )}
-                      </span>
-                    </label>
-                    <div className="form-input-area">
-                      <Field
-                        type="checkbox"
-                        id="watchlistSyncMovies"
-                        name="watchlistSyncMovies"
-                        onChange={() => {
-                          setFieldValue(
-                            'watchlistSyncMovies',
-                            !values.watchlistSyncMovies
-                          );
-                        }}
-                      />
-                    </div>
+              ) && (
+                <div className="form-row">
+                  <label
+                    htmlFor="watchlistSyncMovies"
+                    className="checkbox-label"
+                  >
+                    <span>
+                      {intl.formatMessage(messages.plexwatchlistsyncmovies)}
+                    </span>
+                    <span className="label-tip">
+                      {intl.formatMessage(messages.plexwatchlistsyncmoviestip, {
+                        PlexWatchlistSupportLink: (msg: React.ReactNode) => (
+                          <a
+                            href="https://support.plex.tv/articles/universal-watchlist/"
+                            className="text-white transition duration-300 hover:underline"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {msg}
+                          </a>
+                        ),
+                      })}
+                    </span>
+                  </label>
+                  <div className="form-input-area">
+                    <Field
+                      type="checkbox"
+                      id="watchlistSyncMovies"
+                      name="watchlistSyncMovies"
+                      onChange={() => {
+                        setFieldValue(
+                          'watchlistSyncMovies',
+                          !values.watchlistSyncMovies
+                        );
+                      }}
+                    />
                   </div>
-                )}
+                </div>
+              )}
               {hasPermission(
                 [Permission.AUTO_REQUEST, Permission.AUTO_REQUEST_TV],
                 { type: 'or' }
-              ) &&
-                user?.userType === UserType.PLEX && (
+              ) && (
+                <div className="form-row">
+                  <label htmlFor="watchlistSyncTv" className="checkbox-label">
+                    <span>
+                      {intl.formatMessage(messages.plexwatchlistsyncseries)}
+                    </span>
+                    <span className="label-tip">
+                      {intl.formatMessage(messages.plexwatchlistsyncseriestip, {
+                        PlexWatchlistSupportLink: (msg: React.ReactNode) => (
+                          <a
+                            href="https://support.plex.tv/articles/universal-watchlist/"
+                            className="text-white transition duration-300 hover:underline"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {msg}
+                          </a>
+                        ),
+                      })}
+                    </span>
+                  </label>
+                  <div className="form-input-area">
+                    <Field
+                      type="checkbox"
+                      id="watchlistSyncTv"
+                      name="watchlistSyncTv"
+                      onChange={() => {
+                        setFieldValue(
+                          'watchlistSyncTv',
+                          !values.watchlistSyncTv
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+              {hasPermission([Permission.AUTO_REQUEST]) &&
+                user?.userType === UserType.LOCAL && (
                   <div className="form-row">
-                    <label htmlFor="watchlistSyncTv" className="checkbox-label">
-                      <span>
-                        {intl.formatMessage(messages.plexwatchlistsyncseries)}
-                      </span>
+                    <label htmlFor="watchlistUrl" className="text-label">
+                      <span>{intl.formatMessage(messages.watchlistUrl)}</span>
                       <span className="label-tip">
-                        {intl.formatMessage(
-                          messages.plexwatchlistsyncseriestip,
-                          {
-                            PlexWatchlistSupportLink: (
-                              msg: React.ReactNode
-                            ) => (
-                              <a
-                                href="https://support.plex.tv/articles/universal-watchlist/"
-                                className="text-white transition duration-300 hover:underline"
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                {msg}
-                              </a>
-                            ),
-                          }
-                        )}
+                        {intl.formatMessage(messages.watchlistUrldescription, {
+                          PlexWatchlistFeedLink: (msg: React.ReactNode) => (
+                            <a
+                              href="https://app.plex.tv/desktop/#!/settings/watchlist"
+                              className="text-white transition duration-300 hover:underline"
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {msg}
+                            </a>
+                          ),
+                        })}
                       </span>
                     </label>
                     <div className="form-input-area">
-                      <Field
-                        type="checkbox"
-                        id="watchlistSyncTv"
-                        name="watchlistSyncTv"
-                        onChange={() => {
-                          setFieldValue(
-                            'watchlistSyncTv',
-                            !values.watchlistSyncTv
-                          );
-                        }}
-                      />
+                      <div className="form-input-field">
+                        <Field
+                          id="watchlistUrl"
+                          name="watchlistUrl"
+                          type="text"
+                          placeholder={values.watchlistUrl}
+                        />
+                      </div>
+                      {errors.watchlistUrl &&
+                        touched.watchlistUrl &&
+                        typeof errors.watchlistUrl === 'string' && (
+                          <div className="error">{errors.watchlistUrl}</div>
+                        )}
                     </div>
                   </div>
                 )}

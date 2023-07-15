@@ -72,7 +72,7 @@ const messages = defineMessages({
   tautulliApiKey: 'API Key',
   externalUrl: 'External URL',
   validationApiKey: 'You must provide an API key',
-  validationUrl: 'You must provide a valid URL',
+  validationUrl: 'You must provide a valid Plex RSS URL',
   validationUrlTrailingSlash: 'URL must not end in a trailing slash',
   validationUrlBaseLeadingSlash: 'URL base must have a leading slash',
   validationUrlBaseTrailingSlash: 'URL base must not end in a trailing slash',
@@ -144,7 +144,12 @@ const SettingsPlex = ({ onComplete }: SettingsPlexProps) => {
       .required(intl.formatMessage(messages.validationPortRequired)),
     webAppUrl: Yup.string()
       .nullable()
-      .url(intl.formatMessage(messages.validationUrl)),
+      .url(intl.formatMessage(messages.validationUrl))
+      .test(
+        'leading-slash',
+        intl.formatMessage(messages.validationUrl),
+        (value) => !value || value.startsWith('https://rss.plex.tv')
+      ),
   });
 
   const TautulliSettingsSchema = Yup.object().shape(
