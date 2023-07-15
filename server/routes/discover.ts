@@ -814,7 +814,7 @@ discoverRoutes.get<Record<string, unknown>, WatchlistResponse>(
   '/watchlist',
   async (req, res) => {
     const userRepository = getRepository(User);
-    const itemsPerPage = 20;
+    const itemsPerPage = 20; // This is hardcoded into useDiscover
     const page = Number(req.query.page) ?? 1;
     const offset = (page - 1) * itemsPerPage;
 
