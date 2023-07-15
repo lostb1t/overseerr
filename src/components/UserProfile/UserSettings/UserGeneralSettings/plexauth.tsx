@@ -17,7 +17,7 @@ const Auth = () => {
   const [error, setError] = useState('');
   const [isProcessing, setProcessing] = useState(false);
   const [authToken, setAuthToken] = useState<string | undefined>(undefined);
-  const { revalidate } = useUser();
+  const { user, revalidate } = useUser();
   // const router = useRouter();
   // const settings = useSettings();
 
@@ -28,9 +28,12 @@ const Auth = () => {
     const login = async () => {
       setProcessing(true);
       try {
-        const response = await axios.post('/api/v1/auth/plexwatchlist', {
-          authToken,
-        });
+        const response = await axios.post(
+          `/api/v1/user/${user?.id}/settings/plex_auth`,
+          {
+            authToken: authToken,
+          }
+        );
 
         if (response.data?.id) {
           revalidate();
