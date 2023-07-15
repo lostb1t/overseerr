@@ -1,3 +1,4 @@
+import ExternalAPI from '@server/api/externalapi';
 import { MediaStatus, MediaType } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
 import Media from '@server/entity/Media';
@@ -21,7 +22,7 @@ export interface PlexWatchlistItem {
   title: string;
 }
 
-class WatchlistFeedSync {
+class WatchlistFeedSync extends ExternalAPI {
   public async syncWatchlist() {
     const userRepository = getRepository(User);
 
@@ -179,14 +180,19 @@ class WatchlistFeedSync {
     items: PlexWatchlistItem[];
   }> {
     try {
-      const response = await axios.get(url);
-      const response_items = response.data.items;
-      let next = response.data.links.next ?? null;
+      const path = url.replace('https://rss.plex.tv', '');
+      const response: any = await this.getRolling(path, undefined, 300);
+
+      const response_items = response.items;
+
+      let next = response.links.next ?? null;
 
       while (next) {
-        const response = await axios.get(next);
-        next = response.data.links.next ?? null;
-        response_items.push(response.data.items);
+        // const response = await axios.get(next);
+        const path = next.replace('https://rss.plex.tv', '');
+        const response: any = await this.getRolling(path, undefined, 300);
+        next = response.links.next ?? null;
+        response_items.push(response.items);
       }
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -212,7 +218,7 @@ class WatchlistFeedSync {
       return { items };
     } catch (e) {
       logger.error('Failed to retrieve watchlist items', {
-        label: 'Plex.TV Metadata API',
+        label: 'Plex.TV RSS',
         errorMessage: e.message,
       });
       return {
@@ -222,6 +228,6 @@ class WatchlistFeedSync {
   }
 }
 
-const watchlistFeedSync = new WatchlistFeedSync();
+const watchlistFeedSync = new WatchlistFeedSync('https://rss.plex.tv', {});
 
 export default watchlistFeedSync;

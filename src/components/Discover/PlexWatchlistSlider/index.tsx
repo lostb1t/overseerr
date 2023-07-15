@@ -22,12 +22,16 @@ const PlexWatchlistSlider = () => {
     totalPages: number;
     totalResults: number;
     results: WatchlistItem[];
-  }>(user?.userType === UserType.PLEX ? '/api/v1/discover/watchlist' : null, {
-    revalidateOnMount: true,
-  });
+  }>(
+    user?.userType === UserType.PLEX
+      ? '/api/v1/discover/watchlist'
+      : '/api/v1/discover/watchlist',
+    {
+      revalidateOnMount: true,
+    }
+  );
 
   if (
-    user?.userType !== UserType.PLEX ||
     (watchlistItems &&
       watchlistItems.results.length === 0 &&
       !user?.settings?.watchlistSyncMovies &&

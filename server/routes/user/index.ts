@@ -16,6 +16,7 @@ import type {
 } from '@server/interfaces/api/userInterfaces';
 import { hasPermission, Permission } from '@server/lib/permissions';
 import { getSettings } from '@server/lib/settings';
+import watchlistFeedSync from '@server/lib/watchlistfeedsync';
 import logger from '@server/logger';
 import { isAuthenticated } from '@server/middleware/auth';
 import { Router } from 'express';
@@ -642,7 +643,7 @@ router.get<{ id: string }, WatchlistResponse>(
       select: { id: true, plexToken: true },
     });
 
-    if (!user?.plexToken) {
+    if (!user?.plexToken && !user?.watchlist?.url) {
       // We will just return an empty array if the user has no Plex token
       return res.json({
         page: 1,
@@ -651,22 +652,39 @@ router.get<{ id: string }, WatchlistResponse>(
         results: [],
       });
     }
+    //watchlistFeedSync
+    let watchlist;
 
-    const plexTV = new PlexTvAPI(user.plexToken);
+    if (user?.plexToken) {
+      const plexTV = new PlexTvAPI(user.plexToken);
 
-    const watchlist = await plexTV.getWatchlist({ offset });
+      watchlist = await plexTV.getWatchlist({ offset });
+      return res.json({
+        page,
+        totalPages: Math.ceil(watchlist.totalSize / itemsPerPage),
+        totalResults: watchlist.totalSize,
+        results: watchlist.items.map((item) => ({
+          ratingKey: item.ratingKey,
+          title: item.title,
+          mediaType: item.type === 'show' ? 'tv' : 'movie',
+          tmdbId: item.tmdbId,
+        })),
+      });
+    } else if (user?.watchlist?.url) {
+      watchlist = await watchlistFeedSync.getWatchlist(user?.watchlist?.url);
 
-    return res.json({
-      page,
-      totalPages: Math.ceil(watchlist.totalSize / itemsPerPage),
-      totalResults: watchlist.totalSize,
-      results: watchlist.items.map((item) => ({
-        ratingKey: item.ratingKey,
-        title: item.title,
-        mediaType: item.type === 'show' ? 'tv' : 'movie',
-        tmdbId: item.tmdbId,
-      })),
-    });
+      return res.json({
+        page,
+        totalPages: 1,
+        totalResults: watchlist.items.length,
+        results: watchlist.items.map((item) => ({
+          ratingKey: '',
+          title: item.title,
+          mediaType: item.type === 'show' ? 'tv' : 'movie',
+          tmdbId: item.tmdbId,
+        })),
+      });
+    }
   }
 );
 

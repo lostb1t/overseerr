@@ -76,9 +76,7 @@ router.get<unknown, StatusResponse>('/status', async (req, res) => {
       }
     }
   }
-  const releases = await githubApi.getOverseerrReleases();
-  console.log(currentVersion);
-  console.log(releases[0]);
+
   return res.status(200).json({
     version: getAppVersion(),
     commitTag: getCommitTag(),

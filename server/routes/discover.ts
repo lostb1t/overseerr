@@ -11,6 +11,7 @@ import type {
   WatchlistResponse,
 } from '@server/interfaces/api/discoverInterfaces';
 import { getSettings } from '@server/lib/settings';
+import watchlistFeedSync from '@server/lib/watchlistfeedsync';
 import logger from '@server/logger';
 import { mapProductionCompany } from '@server/models/Movie';
 import {
@@ -817,12 +818,12 @@ discoverRoutes.get<Record<string, unknown>, WatchlistResponse>(
     const page = Number(req.query.page) ?? 1;
     const offset = (page - 1) * itemsPerPage;
 
-    const activeUser = await userRepository.findOne({
+    const user = await userRepository.findOne({
       where: { id: req.user?.id },
-      select: ['id', 'plexToken'],
+      select: ['id', 'plexToken', 'watchlist'],
     });
 
-    if (!activeUser?.plexToken) {
+    if (!user?.plexToken && !user?.watchlist?.url) {
       // We will just return an empty array if the user has no Plex token
       return res.json({
         page: 1,
@@ -831,22 +832,39 @@ discoverRoutes.get<Record<string, unknown>, WatchlistResponse>(
         results: [],
       });
     }
+    //watchlistFeedSync
+    let watchlist;
 
-    const plexTV = new PlexTvAPI(activeUser.plexToken);
+    if (user?.plexToken) {
+      const plexTV = new PlexTvAPI(user.plexToken);
 
-    const watchlist = await plexTV.getWatchlist({ offset });
+      watchlist = await plexTV.getWatchlist({ offset });
+      return res.json({
+        page,
+        totalPages: Math.ceil(watchlist.totalSize / itemsPerPage),
+        totalResults: watchlist.totalSize,
+        results: watchlist.items.map((item) => ({
+          ratingKey: item.ratingKey,
+          title: item.title,
+          mediaType: item.type === 'show' ? 'tv' : 'movie',
+          tmdbId: item.tmdbId,
+        })),
+      });
+    } else if (user?.watchlist?.url) {
+      watchlist = await watchlistFeedSync.getWatchlist(user?.watchlist?.url);
 
-    return res.json({
-      page,
-      totalPages: Math.ceil(watchlist.totalSize / itemsPerPage),
-      totalResults: watchlist.totalSize,
-      results: watchlist.items.map((item) => ({
-        ratingKey: item.ratingKey,
-        title: item.title,
-        mediaType: item.type === 'show' ? 'tv' : 'movie',
-        tmdbId: item.tmdbId,
-      })),
-    });
+      return res.json({
+        page,
+        totalPages: 1,
+        totalResults: watchlist.items.length,
+        results: watchlist.items.map((item) => ({
+          ratingKey: '',
+          title: item.title,
+          mediaType: item.type === 'show' ? 'tv' : 'movie',
+          tmdbId: item.tmdbId,
+        })),
+      });
+    }
   }
 );
 
