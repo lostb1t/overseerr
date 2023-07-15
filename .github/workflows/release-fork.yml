@@ -37,7 +37,7 @@ jobs:
       - uses: benjlevesque/short-sha@v2.2
         id: short-sha
         with:
-          length: 5
+          length: 6
       - name: Set env
         #run: echo ${{ steps.package-version.outputs.current-version}}.${{ steps.short-sha.outputs.sha }} >> $GITHUB_ENV
         run: echo "VERSION=${{ steps.package-version.outputs.current-version}}.${{ steps.short-sha.outputs.sha }}" >> $GITHUB_ENV
