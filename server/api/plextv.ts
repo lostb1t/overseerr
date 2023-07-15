@@ -255,22 +255,21 @@ class PlexTvAPI extends ExternalAPI {
       if (!settings.plex.machineId) {
         throw new Error('Plex is not configured!');
       }
-      return true;
-      // const friends = await this.getFriends();
+      const friends = await this.getFriends();
 
-      // const users = friends.MediaContainer.User;
+      const users = friends.MediaContainer.User;
 
-      // const user = users.find((u) => parseInt(u.$.id) === userId);
+      const user = users.find((u) => parseInt(u.$.id) === userId);
 
-      // if (!user) {
-      //   throw new Error(
-      //     "This user does not exist on the main Plex account's shared list"
-      //   );
-      // }
+      if (!user) {
+        throw new Error(
+          "This user does not exist on the main Plex account's shared list"
+        );
+      }
 
-      // return !!user.Server?.find(
-      //   (server) => server.$.machineIdentifier === settings.plex.machineId
-      // );
+      return !!user.Server?.find(
+        (server) => server.$.machineIdentifier === settings.plex.machineId
+      );
     } catch (e) {
       logger.error(`Error checking user access: ${e.message}`);
       return false;
