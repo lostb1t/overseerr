@@ -3,7 +3,7 @@ name: Overseerr CI Fork
 on:
   pull_request:
     branches:
-      - '*'
+      - "*"
 
 jobs:
   test:
@@ -36,7 +36,7 @@ jobs:
           export BRANCH=${GITHUB_REF#refs/*/}
           echo "branch: ${BRANCH}"
           export BRANCHTRANSLATED=$(echo ${BRANCH} | tr '/' '_')
-          echo "::set-output name=short_ref::${BRANCHTRANSLATED}
+          echo "::set-output name=short_ref::${BRANCHTRANSLATED}"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
