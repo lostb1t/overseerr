@@ -6376,6 +6376,21 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/WatchProviderDetails'
+  /user/{userId}/settings/plex:
+    post:
+      summary: Plex auth for local user
+      tags:
+        - other
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: success
+
 security:
   - cookieAuth: []
   - apiKey: []

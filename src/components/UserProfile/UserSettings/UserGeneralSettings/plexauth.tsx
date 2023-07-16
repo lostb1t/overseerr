@@ -29,7 +29,7 @@ const Auth = () => {
       setProcessing(true);
       try {
         const response = await axios.post(
-          `/api/v1/user/${user?.id}/settings/plex_auth`,
+          `/api/v1/user/${user?.id}/settings/plex`,
           {
             authToken: authToken,
           }
