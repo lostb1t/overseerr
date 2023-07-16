@@ -5,6 +5,7 @@ import PageTitle from '@app/components/Common/PageTitle';
 import LanguageSelector from '@app/components/LanguageSelector';
 import QuotaSelector from '@app/components/QuotaSelector';
 import RegionSelector from '@app/components/RegionSelector';
+import Auth from '@app/components/UserProfile/UserSettings/UserGeneralSettings/plexauth';
 import type { AvailableLocale } from '@app/context/LanguageContext';
 import { availableLanguages } from '@app/context/LanguageContext';
 import useLocale from '@app/hooks/useLocale';
@@ -55,10 +56,14 @@ const messages = defineMessages({
   plexwatchlistsyncseries: 'Auto-Request Series',
   plexwatchlistsyncseriestip:
     'Automatically request series on your <PlexWatchlistSupportLink>Plex Watchlist</PlexWatchlistSupportLink>',
-  watchlistUrl: 'Watchlists',
+  watchlistUrl: 'Watchlist feed',
+  watchlist: 'Watchlist',
   watchlistUrldescription:
     'You can find your feed <PlexWatchlistFeedLink>here</PlexWatchlistFeedLink>',
   validationWatchlistUrl: 'You must provide a valid url',
+  watchlistAuth: 'Plex Auth',
+  watchlistAuthDescription:
+    'Authenticate with plex to get your watchlist automatic',
 });
 
 const UserGeneralSettings = () => {
@@ -509,43 +514,78 @@ const UserGeneralSettings = () => {
                   </div>
                 </div>
               )}
-              {hasPermission([Permission.AUTO_REQUEST]) &&
-                user?.userType === UserType.LOCAL && (
+
+              {user?.userType === UserType.LOCAL && (
+                <div
+                  role="group"
+                  aria-labelledby="group-label"
+                  className="form-group"
+                >
                   <div className="form-row">
-                    <label htmlFor="watchlistUrl" className="text-label">
-                      <span>{intl.formatMessage(messages.watchlistUrl)}</span>
-                      <span className="label-tip">
-                        {intl.formatMessage(messages.watchlistUrldescription, {
-                          PlexWatchlistFeedLink: (msg: React.ReactNode) => (
-                            <a
-                              href="https://app.plex.tv/desktop/#!/settings/watchlist"
-                              className="text-white transition duration-300 hover:underline"
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              {msg}
-                            </a>
-                          ),
-                        })}
-                      </span>
-                    </label>
+                    <span id="group-label" className="group-label">
+                      {intl.formatMessage(messages.watchlist)}
+                    </span>
                     <div className="form-input-area">
-                      <div className="form-input-field">
-                        <Field
-                          id="watchlistUrl"
-                          name="watchlistUrl"
-                          type="text"
-                          placeholder={values.watchlistUrl}
-                        />
+                      <div className="max-w-lg">
+                        <label htmlFor="watchlistAuth" className="text-label">
+                          <span>
+                            {intl.formatMessage(messages.watchlistAuth)}
+                          </span>
+                          <span className="label-tip">
+                            {intl.formatMessage(
+                              messages.watchlistAuthDescription
+                            )}
+                          </span>
+                        </label>
+                        <div className="relative mb-6 flex">
+                          <Auth />
+                        </div>
+
+                        <div className="max-w-lg">
+                          <label htmlFor="watchlistUrl" className="text-label">
+                            <span>
+                              {intl.formatMessage(messages.watchlistUrl)}
+                            </span>
+                            <span className="label-tip">
+                              {intl.formatMessage(
+                                messages.watchlistUrldescription,
+                                {
+                                  PlexWatchlistFeedLink: (
+                                    msg: React.ReactNode
+                                  ) => (
+                                    <a
+                                      href="https://app.plex.tv/desktop/#!/settings/watchlist"
+                                      className="text-white transition duration-300 hover:underline"
+                                      target="_blank"
+                                      rel="noreferrer"
+                                    >
+                                      {msg}
+                                    </a>
+                                  ),
+                                }
+                              )}
+                            </span>
+                          </label>
+                          <div className="form-input-field mt-3">
+                            <Field
+                              id="watchlistUrl"
+                              name="watchlistUrl"
+                              type="text"
+                              placeholder={values.watchlistUrl}
+                            />
+                          </div>
+                          {errors.watchlistUrl &&
+                            touched.watchlistUrl &&
+                            typeof errors.watchlistUrl === 'string' && (
+                              <div className="error">{errors.watchlistUrl}</div>
+                            )}
+                        </div>
                       </div>
-                      {errors.watchlistUrl &&
-                        touched.watchlistUrl &&
-                        typeof errors.watchlistUrl === 'string' && (
-                          <div className="error">{errors.watchlistUrl}</div>
-                        )}
                     </div>
                   </div>
-                )}
+                </div>
+              )}
+
               <div className="actions">
                 <div className="flex justify-end">
                   <span className="ml-3 inline-flex rounded-md shadow-sm">

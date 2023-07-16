@@ -1,3 +1,4 @@
+import PlexTvAPI from '@server/api/plextv';
 import { getRepository } from '@server/datasource';
 import { User } from '@server/entity/User';
 import { UserSettings } from '@server/entity/UserSettings';
@@ -425,6 +426,57 @@ userSettingsRoutes.post<
       return res.status(200).json({ permissions: user.permissions });
     } catch (e) {
       next({ status: 500, message: e.message });
+    }
+  }
+);
+
+userSettingsRoutes.post<{ id: string }>(
+  '/plex',
+  isOwnProfileOrAdmin(),
+  async (req, res, next) => {
+    try {
+      const userRepository = getRepository(User);
+      const body = req.body as { authToken?: string };
+
+      const user = req.user;
+
+      if (!user) {
+        return next({ status: 404, message: 'User not found.' });
+      }
+
+      if (!body.authToken) {
+        return next({
+          status: 500,
+          message: 'Authentication token required.',
+        });
+      }
+
+      // First we need to use this auth token to get the user's email from plex.tv
+      const plextv = new PlexTvAPI(body.authToken);
+      const account = await plextv.getUser();
+      const mainUser = await userRepository.findOneOrFail({
+        select: { id: true, plexToken: true, plexId: true, email: true },
+        where: { id: 1 },
+      });
+
+      if (account.id !== mainUser.plexId && account.email !== mainUser.email) {
+        user.plexToken = body.authToken;
+        user.plexId = account.id;
+        user.plexUsername = account.username;
+        await userRepository.save(user);
+      }
+
+      return res.status(200).json(user?.filter() ?? {});
+    } catch (e) {
+      logger.error('Something went wrong authenticating with Plex account', {
+        label: 'API',
+        errorMessage: e.message,
+        ip: req.ip,
+      });
+      return next({
+        status: 500,
+        message: 'Unable to authenticate.',
+      });
     }
   }
 );

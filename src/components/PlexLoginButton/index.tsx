@@ -1,12 +1,14 @@
+import { useUser } from '@app/hooks/useUser';
 import globalMessages from '@app/i18n/globalMessages';
 import PlexOAuth from '@app/utils/plex';
 import { ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 
 const messages = defineMessages({
   signinwithplex: 'Sign In',
   signingin: 'Signing In…',
+  isAuthenticated: 'You are authenticated with plex',
 });
 
 const plexOAuth = new PlexOAuth();
@@ -24,6 +26,15 @@ const PlexLoginButton = ({
 }: PlexLoginButtonProps) => {
   const intl = useIntl();
   const [loading, setLoading] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+  const { user, revalidate } = useUser();
+
+  useEffect(() => {
+    setAuthenticated(false);
+    if (user?.plexUsername !== '') {
+      setAuthenticated(true);
+    }
+  }, [revalidate, user?.plexUsername]);
 
   const getPlexLogin = async () => {
     setLoading(true);
@@ -46,7 +57,7 @@ const PlexLoginButton = ({
           plexOAuth.preparePopup();
           setTimeout(() => getPlexLogin(), 1500);
         }}
-        disabled={loading || isProcessing}
+        disabled={loading || isProcessing || authenticated}
         className="plex-button"
       >
         <ArrowLeftOnRectangleIcon />
@@ -55,6 +66,8 @@ const PlexLoginButton = ({
             ? intl.formatMessage(globalMessages.loading)
             : isProcessing
             ? intl.formatMessage(messages.signingin)
+            : authenticated
+            ? intl.formatMessage(messages.isAuthenticated)
             : intl.formatMessage(messages.signinwithplex)}
         </span>
       </button>
