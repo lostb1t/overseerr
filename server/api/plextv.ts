@@ -247,7 +247,6 @@ class PlexTvAPI extends ExternalAPI {
     return parsedXml;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async checkUserAccess(userId: number): Promise<boolean> {
     const settings = getSettings();
 
@@ -255,6 +254,7 @@ class PlexTvAPI extends ExternalAPI {
       if (!settings.plex.machineId) {
         throw new Error('Plex is not configured!');
       }
+
       const friends = await this.getFriends();
 
       const users = friends.MediaContainer.User;
