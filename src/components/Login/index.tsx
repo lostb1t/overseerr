@@ -3,7 +3,6 @@ import ImageFader from '@app/components/Common/ImageFader';
 import PageTitle from '@app/components/Common/PageTitle';
 import LanguagePicker from '@app/components/Layout/LanguagePicker';
 import LocalLogin from '@app/components/Login/LocalLogin';
-import PlexLoginButton from '@app/components/PlexLoginButton';
 import useSettings from '@app/hooks/useSettings';
 import { useUser } from '@app/hooks/useUser';
 import { Transition } from '@headlessui/react';
@@ -24,7 +23,7 @@ const messages = defineMessages({
 const Login = () => {
   const intl = useIntl();
   const [error, setError] = useState('');
-  const [isProcessing, setProcessing] = useState(false);
+  // const [isProcessing, setProcessing] = useState(false);
   const [authToken, setAuthToken] = useState<string | undefined>(undefined);
   const { user, revalidate } = useUser();
   const router = useRouter();
@@ -118,7 +117,7 @@ const Login = () => {
             <Accordion single atLeastOne>
               {({ openIndexes, handleClick, AccordionContent }) => (
                 <>
-                  <button
+                  {/* <button
                     className={`w-full cursor-default bg-gray-800 bg-opacity-70 py-2 text-center text-sm font-bold text-gray-400 transition-colors duration-200 focus:outline-none sm:rounded-t-lg ${
                       openIndexes.includes(0) && 'text-indigo-500'
                     } ${
@@ -137,23 +136,23 @@ const Login = () => {
                         onAuthToken={(authToken) => setAuthToken(authToken)}
                       />
                     </div>
-                  </AccordionContent>
+                  </AccordionContent> */}
                   {settings.currentSettings.localLogin && (
                     <div>
                       <button
                         className={`w-full cursor-default bg-gray-800 bg-opacity-70 py-2 text-center text-sm font-bold text-gray-400 transition-colors duration-200 hover:cursor-pointer hover:bg-gray-700 focus:outline-none ${
-                          openIndexes.includes(1)
+                          openIndexes.includes(0)
                             ? 'text-indigo-500'
                             : 'sm:rounded-b-lg'
                         }`}
-                        onClick={() => handleClick(1)}
+                        onClick={() => handleClick(0)}
                       >
                         {intl.formatMessage(messages.signinwithoverseerr, {
                           applicationTitle:
                             settings.currentSettings.applicationTitle,
                         })}
                       </button>
-                      <AccordionContent isOpen={openIndexes.includes(1)}>
+                      <AccordionContent isOpen={openIndexes.includes(0)}>
                         <div className="px-10 py-8">
                           <LocalLogin revalidate={revalidate} />
                         </div>
