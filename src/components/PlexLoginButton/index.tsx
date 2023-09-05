@@ -31,7 +31,7 @@ const PlexLoginButton = ({
 
   useEffect(() => {
     setAuthenticated(false);
-    if (user?.plexUsername !== '') {
+    if (!user?.plexUsername) {
       setAuthenticated(true);
     }
   }, [revalidate, user?.plexUsername]);

@@ -3,6 +3,7 @@ import ImageFader from '@app/components/Common/ImageFader';
 import PageTitle from '@app/components/Common/PageTitle';
 import LanguagePicker from '@app/components/Layout/LanguagePicker';
 import LocalLogin from '@app/components/Login/LocalLogin';
+import PlexLoginButton from '@app/components/PlexLoginButton';
 import useSettings from '@app/hooks/useSettings';
 import { useUser } from '@app/hooks/useUser';
 import { Transition } from '@headlessui/react';
@@ -23,7 +24,7 @@ const messages = defineMessages({
 const Login = () => {
   const intl = useIntl();
   const [error, setError] = useState('');
-  // const [isProcessing, setProcessing] = useState(false);
+  const [isProcessing, setProcessing] = useState(false);
   const [authToken, setAuthToken] = useState<string | undefined>(undefined);
   const { user, revalidate } = useUser();
   const router = useRouter();
@@ -117,26 +118,28 @@ const Login = () => {
             <Accordion single atLeastOne>
               {({ openIndexes, handleClick, AccordionContent }) => (
                 <>
-                  {/* <button
-                    className={`w-full cursor-default bg-gray-800 bg-opacity-70 py-2 text-center text-sm font-bold text-gray-400 transition-colors duration-200 focus:outline-none sm:rounded-t-lg ${
-                      openIndexes.includes(0) && 'text-indigo-500'
-                    } ${
-                      settings.currentSettings.localLogin &&
-                      'hover:cursor-pointer hover:bg-gray-700'
-                    }`}
-                    onClick={() => handleClick(0)}
-                    disabled={!settings.currentSettings.localLogin}
-                  >
-                    {intl.formatMessage(messages.signinwithplex)}
-                  </button>
-                  <AccordionContent isOpen={openIndexes.includes(0)}>
-                    <div className="px-10 py-8">
-                      <PlexLoginButton
-                        isProcessing={isProcessing}
-                        onAuthToken={(authToken) => setAuthToken(authToken)}
-                      />
-                    </div>
-                  </AccordionContent> */}
+                  <div className="hidden">
+                    <button
+                      className={`w-full cursor-default bg-gray-800 bg-opacity-70 py-2 text-center text-sm font-bold text-gray-400 transition-colors duration-200 focus:outline-none sm:rounded-t-lg ${
+                        openIndexes.includes(0) && 'text-indigo-500'
+                      } ${
+                        settings.currentSettings.localLogin &&
+                        'hover:cursor-pointer hover:bg-gray-700'
+                      }`}
+                      onClick={() => handleClick(0)}
+                      disabled={!settings.currentSettings.localLogin}
+                    >
+                      {intl.formatMessage(messages.signinwithplex)}
+                    </button>
+                    <AccordionContent isOpen={openIndexes.includes(0)}>
+                      <div className="px-10 py-8">
+                        <PlexLoginButton
+                          isProcessing={isProcessing}
+                          onAuthToken={(authToken) => setAuthToken(authToken)}
+                        />
+                      </div>
+                    </AccordionContent>
+                  </div>
                   {settings.currentSettings.localLogin && (
                     <div>
                       <button
