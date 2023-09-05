@@ -196,7 +196,6 @@ export class MediaRequest {
 
     if (requestBody.mediaType === MediaType.MOVIE) {
       await mediaRepository.save(media);
-
       const request = new MediaRequest({
         type: MediaType.MOVIE,
         media,
@@ -244,6 +243,7 @@ export class MediaRequest {
       const tmdbMediaShow = tmdbMedia as Awaited<
         ReturnType<typeof tmdb.getTvShow>
       >;
+
       const requestedSeasons =
         requestBody.seasons === 'all'
           ? tmdbMediaShow.seasons
@@ -300,39 +300,38 @@ export class MediaRequest {
 
       await mediaRepository.save(media);
 
+      let can_approve = user.hasPermission(
+        [
+          requestBody.is4k
+            ? Permission.AUTO_APPROVE_4K
+            : Permission.AUTO_APPROVE,
+          requestBody.is4k
+            ? Permission.AUTO_APPROVE_4K_TV
+            : Permission.AUTO_APPROVE_TV,
+          Permission.MANAGE_REQUESTS,
+        ],
+        { type: 'or' }
+      );
+
+      if (
+        tmdbMediaShow.keywords.results.some(
+          (keyword) => keyword.id === ANIME_KEYWORD_ID
+        )
+      ) {
+        can_approve = user.hasPermission([Permission.MANAGE_REQUESTS], {
+          type: 'or',
+        });
+      }
+
       const request = new MediaRequest({
         type: MediaType.TV,
         media,
         requestedBy: requestUser,
         // If the user is an admin or has the "auto approve" permission, automatically approve the request
-        status: user.hasPermission(
-          [
-            requestBody.is4k
-              ? Permission.AUTO_APPROVE_4K
-              : Permission.AUTO_APPROVE,
-            requestBody.is4k
-              ? Permission.AUTO_APPROVE_4K_TV
-              : Permission.AUTO_APPROVE_TV,
-            Permission.MANAGE_REQUESTS,
-          ],
-          { type: 'or' }
-        )
+        status: can_approve
           ? MediaRequestStatus.APPROVED
           : MediaRequestStatus.PENDING,
-        modifiedBy: user.hasPermission(
-          [
-            requestBody.is4k
-              ? Permission.AUTO_APPROVE_4K
-              : Permission.AUTO_APPROVE,
-            requestBody.is4k
-              ? Permission.AUTO_APPROVE_4K_TV
-              : Permission.AUTO_APPROVE_TV,
-            Permission.MANAGE_REQUESTS,
-          ],
-          { type: 'or' }
-        )
-          ? user
-          : undefined,
+        modifiedBy: can_approve ? user : undefined,
         is4k: requestBody.is4k,
         serverId: requestBody.serverId,
         profileId: requestBody.profileId,
@@ -343,18 +342,7 @@ export class MediaRequest {
           (sn) =>
             new SeasonRequest({
               seasonNumber: sn,
-              status: user.hasPermission(
-                [
-                  requestBody.is4k
-                    ? Permission.AUTO_APPROVE_4K
-                    : Permission.AUTO_APPROVE,
-                  requestBody.is4k
-                    ? Permission.AUTO_APPROVE_4K_TV
-                    : Permission.AUTO_APPROVE_TV,
-                  Permission.MANAGE_REQUESTS,
-                ],
-                { type: 'or' }
-              )
+              status: can_approve
                 ? MediaRequestStatus.APPROVED
                 : MediaRequestStatus.PENDING,
             })
