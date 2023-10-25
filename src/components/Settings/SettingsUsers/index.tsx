@@ -1,8 +1,10 @@
 import Button from '@app/components/Common/Button';
 import LoadingSpinner from '@app/components/Common/LoadingSpinner';
 import PageTitle from '@app/components/Common/PageTitle';
+import LanguageSelector from '@app/components/LanguageSelector';
 import PermissionEdit from '@app/components/PermissionEdit';
 import QuotaSelector from '@app/components/QuotaSelector';
+import { GenreSelector, KeywordSelector } from '@app/components/Selector';
 import globalMessages from '@app/i18n/globalMessages';
 import { ArrowDownOnSquareIcon } from '@heroicons/react/24/outline';
 import type { MainSettings } from '@server/lib/settings';
@@ -11,7 +13,7 @@ import { Field, Form, Formik } from 'formik';
 import { defineMessages, useIntl } from 'react-intl';
 import { useToasts } from 'react-toast-notifications';
 import useSWR, { mutate } from 'swr';
-
+// import { info } from "console";
 const messages = defineMessages({
   users: 'Users',
   userSettings: 'User Settings',
@@ -37,11 +39,13 @@ const SettingsUsers = () => {
     error,
     mutate: revalidate,
   } = useSWR<MainSettings>('/api/v1/settings/main');
+  // const updateQueryParams = useUpdateQueryParams({});
+  // const batchUpdateQueryParams = useBatchUpdateQueryParams({});
 
   if (!data && !error) {
     return <LoadingSpinner />;
   }
-
+  // info("sup");
   return (
     <>
       <PageTitle
@@ -66,6 +70,10 @@ const SettingsUsers = () => {
             tvQuotaLimit: data?.defaultQuotas.tv.quotaLimit ?? 0,
             tvQuotaDays: data?.defaultQuotas.tv.quotaDays ?? 7,
             defaultPermissions: data?.defaultPermissions ?? 0,
+            excludedKeywords: data?.excludedKeywords,
+            excludedLanguages: data?.excludedLanguages,
+            excludedMovieGenres: data?.excludedMovieGenres,
+            excludedTVGenres: data?.excludedTVGenres,
           }}
           enableReinitialize
           onSubmit={async (values) => {
@@ -84,6 +92,10 @@ const SettingsUsers = () => {
                   },
                 },
                 defaultPermissions: values.defaultPermissions,
+                excludedKeywords: values.excludedKeywords,
+                excludedLanguages: values.excludedLanguages,
+                excludedMovieGenres: values.excludedMovieGenres,
+                excludedTVGenres: values.excludedTVGenres,
               });
               mutate('/api/v1/settings/public');
 
@@ -169,6 +181,74 @@ const SettingsUsers = () => {
                       defaultLimit={values.tvQuotaLimit}
                     />
                   </div>
+                </div>
+                <div className="form-row">
+                  <label htmlFor="applicationTitle" className="text-label">
+                    Auto approve excluded movie genres
+                  </label>
+                  <GenreSelector
+                    type="movie"
+                    defaultValue={values.excludedMovieGenres}
+                    isMulti
+                    onChange={(value) => {
+                      setFieldValue(
+                        'excludedMovieGenres',
+                        value?.map((v) => v.value).join(',')
+                      );
+                    }}
+                  />
+                </div>
+                <div className="form-row">
+                  <label htmlFor="applicationTitle" className="text-label">
+                    Auto approve excluded TV genres
+                  </label>
+                  <GenreSelector
+                    type="tv"
+                    defaultValue={values.excludedTVGenres}
+                    isMulti
+                    onChange={(value) => {
+                      setFieldValue(
+                        'excludedTVGenres',
+                        value?.map((v) => v.value).join(',')
+                      );
+                    }}
+                  />
+                </div>
+                <div className="form-row">
+                  <label htmlFor="applicationTitle" className="text-label">
+                    Auto approve exclude keywords
+                  </label>
+                  <KeywordSelector
+                    defaultValue={values.excludedKeywords}
+                    isMulti
+                    onChange={(value) => {
+                      setFieldValue(
+                        'excludedKeywords',
+                        value?.map((v) => v.value).join(',')
+                      );
+                      // updateQueryParams('excludedKeywords', value?.map((v) => v.value).join(','));
+                    }}
+                  />
+                </div>
+                <div className="form-row">
+                  <label htmlFor="applicationTitle" className="text-label">
+                    Auto approve excluded languages
+                  </label>
+                  <LanguageSelector
+                    value={values.excludedLanguages}
+                    setFieldValue={(_key, value) => {
+                      setFieldValue('excludedLanguages', value);
+                    }}
+                    // setFieldValue={() => {
+                    //   setFieldValue(
+                    //     'excludedLanguages',
+                    //     values.excludedLanguages
+                    //   );
+                    // }}
+                    // onChange={(value) => {
+                    //   setFieldValue('excludedLanguages', value?.map((v) => v.value).join(','));
+                    // }}
+                  />
                 </div>
                 <div
                   role="group"

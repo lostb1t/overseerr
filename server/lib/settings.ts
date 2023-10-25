@@ -102,6 +102,10 @@ export interface MainSettings {
   trustProxy: boolean;
   partialRequestsEnabled: boolean;
   locale: string;
+  excludedKeywords: string | undefined;
+  excludedLanguages: string | undefined;
+  excludedMovieGenres: string | undefined;
+  excludedTVGenres: string | undefined;
 }
 
 interface PublicSettings {
@@ -298,6 +302,10 @@ class Settings {
         trustProxy: false,
         partialRequestsEnabled: true,
         locale: 'en',
+        excludedKeywords: '',
+        excludedLanguages: '',
+        excludedMovieGenres: '',
+        excludedTVGenres: '',
       },
       plex: {
         name: '',

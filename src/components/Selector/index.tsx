@@ -272,6 +272,7 @@ export const KeywordSelector = ({
       loadOptions={loadKeywordOptions}
       placeholder={intl.formatMessage(messages.searchKeywords)}
       onChange={(value) => {
+        // console.log(value);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onChange(value as any);
       }}
