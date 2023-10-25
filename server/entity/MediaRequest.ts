@@ -56,6 +56,7 @@ export class MediaRequest {
     const mediaRepository = getRepository(Media);
     const requestRepository = getRepository(MediaRequest);
     const userRepository = getRepository(User);
+    const settings = getSettings();
 
     let requestUser = user;
 
@@ -194,6 +195,10 @@ export class MediaRequest {
       }
     }
 
+    const excluded_keywords = settings.main.APExcludedKeywords?.split(',').map(
+      (e) => parseInt(e)
+    );
+
     if (requestBody.mediaType === MediaType.MOVIE) {
       await mediaRepository.save(media);
       const tmdbMediaMovie = tmdbMedia as Awaited<
@@ -213,10 +218,21 @@ export class MediaRequest {
         { type: 'or' }
       );
 
+      // if (
+      //   tmdbMediaMovie.keywords.keywords.some(
+      //     (keyword) => keyword.id === ANIME_KEYWORD_ID
+      //   )
+      // ) {
+      //   can_approve = user.hasPermission([Permission.MANAGE_REQUESTS], {
+      //     type: 'or',
+      //   });
+      // }
+
       if (
-        tmdbMediaMovie.keywords.keywords.some(
-          (keyword) => keyword.id === ANIME_KEYWORD_ID
-        )
+        excluded_keywords &&
+        tmdbMediaMovie.keywords.keywords.some((keyword) => {
+          return excluded_keywords.some((e) => e === keyword.id);
+        })
       ) {
         can_approve = user.hasPermission([Permission.MANAGE_REQUESTS], {
           type: 'or',

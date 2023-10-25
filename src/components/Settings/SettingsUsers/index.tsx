@@ -70,10 +70,10 @@ const SettingsUsers = () => {
             tvQuotaLimit: data?.defaultQuotas.tv.quotaLimit ?? 0,
             tvQuotaDays: data?.defaultQuotas.tv.quotaDays ?? 7,
             defaultPermissions: data?.defaultPermissions ?? 0,
-            excludedKeywords: data?.excludedKeywords,
-            excludedLanguages: data?.excludedLanguages,
-            excludedMovieGenres: data?.excludedMovieGenres,
-            excludedTVGenres: data?.excludedTVGenres,
+            APExcludedKeywords: data?.APExcludedKeywords,
+            APLanguages: data?.APLanguages,
+            APExcludedMovieGenres: data?.APExcludedMovieGenres,
+            APExcludedTVGenres: data?.APExcludedTVGenres,
           }}
           enableReinitialize
           onSubmit={async (values) => {
@@ -92,10 +92,10 @@ const SettingsUsers = () => {
                   },
                 },
                 defaultPermissions: values.defaultPermissions,
-                excludedKeywords: values.excludedKeywords,
-                excludedLanguages: values.excludedLanguages,
-                excludedMovieGenres: values.excludedMovieGenres,
-                excludedTVGenres: values.excludedTVGenres,
+                APExcludedKeywords: values.APExcludedKeywords,
+                APLanguages: values.APLanguages,
+                APExcludedMovieGenres: values.APExcludedMovieGenres,
+                APExcludedTVGenres: values.APExcludedTVGenres,
               });
               mutate('/api/v1/settings/public');
 
@@ -188,11 +188,11 @@ const SettingsUsers = () => {
                   </label>
                   <GenreSelector
                     type="movie"
-                    defaultValue={values.excludedMovieGenres}
+                    defaultValue={values.APExcludedMovieGenres}
                     isMulti
                     onChange={(value) => {
                       setFieldValue(
-                        'excludedMovieGenres',
+                        'APExcludedMovieGenres',
                         value?.map((v) => v.value).join(',')
                       );
                     }}
@@ -204,11 +204,11 @@ const SettingsUsers = () => {
                   </label>
                   <GenreSelector
                     type="tv"
-                    defaultValue={values.excludedTVGenres}
+                    defaultValue={values.APExcludedTVGenres}
                     isMulti
                     onChange={(value) => {
                       setFieldValue(
-                        'excludedTVGenres',
+                        'APExcludedTVGenres',
                         value?.map((v) => v.value).join(',')
                       );
                     }}
@@ -219,11 +219,11 @@ const SettingsUsers = () => {
                     Auto approve exclude keywords
                   </label>
                   <KeywordSelector
-                    defaultValue={values.excludedKeywords}
+                    defaultValue={values.APExcludedKeywords}
                     isMulti
                     onChange={(value) => {
                       setFieldValue(
-                        'excludedKeywords',
+                        'APExcludedKeywords',
                         value?.map((v) => v.value).join(',')
                       );
                       // updateQueryParams('excludedKeywords', value?.map((v) => v.value).join(','));
@@ -232,12 +232,12 @@ const SettingsUsers = () => {
                 </div>
                 <div className="form-row">
                   <label htmlFor="applicationTitle" className="text-label">
-                    Auto approve excluded languages
+                    Auto approve languages
                   </label>
                   <LanguageSelector
-                    value={values.excludedLanguages}
+                    value={values.APLanguages}
                     setFieldValue={(_key, value) => {
-                      setFieldValue('excludedLanguages', value);
+                      setFieldValue('APLanguages', value);
                     }}
                     // setFieldValue={() => {
                     //   setFieldValue(
