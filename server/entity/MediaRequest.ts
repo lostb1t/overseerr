@@ -7,6 +7,11 @@ import type {
 import SonarrAPI from '@server/api/servarr/sonarr';
 import TheMovieDb from '@server/api/themoviedb';
 import { ANIME_KEYWORD_ID } from '@server/api/themoviedb/constants';
+import type {
+  TmdbKeyword,
+  TmdbMovieDetails,
+  TmdbTvDetails,
+} from '@server/api/themoviedb/interfaces';
 import {
   MediaRequestStatus,
   MediaStatus,
@@ -56,7 +61,7 @@ export class MediaRequest {
     const mediaRepository = getRepository(Media);
     const requestRepository = getRepository(MediaRequest);
     const userRepository = getRepository(User);
-    const settings = getSettings();
+    // const settings = getSettings();
 
     let requestUser = user;
 
@@ -195,10 +200,6 @@ export class MediaRequest {
       }
     }
 
-    const excluded_keywords = settings.main.APExcludedKeywords?.split(',').map(
-      (e) => parseInt(e)
-    );
-
     if (requestBody.mediaType === MediaType.MOVIE) {
       await mediaRepository.save(media);
       const tmdbMediaMovie = tmdbMedia as Awaited<
@@ -218,22 +219,7 @@ export class MediaRequest {
         { type: 'or' }
       );
 
-      // if (
-      //   tmdbMediaMovie.keywords.keywords.some(
-      //     (keyword) => keyword.id === ANIME_KEYWORD_ID
-      //   )
-      // ) {
-      //   can_approve = user.hasPermission([Permission.MANAGE_REQUESTS], {
-      //     type: 'or',
-      //   });
-      // }
-
-      if (
-        excluded_keywords &&
-        tmdbMediaMovie.keywords.keywords.some((keyword) => {
-          return excluded_keywords.some((e) => e === keyword.id);
-        })
-      ) {
+      if (!this.canApprove(tmdbMediaMovie, 'movie')) {
         can_approve = user.hasPermission([Permission.MANAGE_REQUESTS], {
           type: 'or',
         });
@@ -276,11 +262,7 @@ export class MediaRequest {
         { type: 'or' }
       );
 
-      if (
-        tmdbMediaShow.keywords.results.some(
-          (keyword) => keyword.id === ANIME_KEYWORD_ID
-        )
-      ) {
+      if (!this.canApprove(tmdbMediaShow, 'tv')) {
         can_approve = user.hasPermission([Permission.MANAGE_REQUESTS], {
           type: 'or',
         });
@@ -372,6 +354,74 @@ export class MediaRequest {
       await requestRepository.save(request);
       return request;
     }
+  }
+
+  static canApprove(
+    media: TmdbMovieDetails | TmdbTvDetails,
+    type: string
+  ): boolean {
+    const settings = getSettings();
+    let media_keywords: TmdbKeyword[] = [];
+    let excluded_genres: number[] = [];
+    let media_title = '';
+    if (type == 'movie') {
+      media = media as TmdbMovieDetails;
+      media_title = media.title;
+      media_keywords = media.keywords.keywords;
+      excluded_genres =
+        settings.main.APExcludedMovieGenres?.split(',').map((e) =>
+          parseInt(e)
+        ) ?? [];
+    } else {
+      media = media as TmdbTvDetails;
+      media_title = media.name;
+      media_keywords = media.keywords.results;
+      excluded_genres =
+        settings.main.APExcludedTVGenres?.split(',').map((e) => parseInt(e)) ??
+        [];
+    }
+
+    const excluded_keywords = settings.main.APExcludedKeywords?.split(',').map(
+      (e) => parseInt(e)
+    );
+
+    const allowed_languages = settings.main.APLanguages?.split(',');
+
+    if (
+      excluded_keywords &&
+      media_keywords.some((keyword: TmdbKeyword) => {
+        return excluded_keywords.some((e) => e === keyword.id);
+      })
+    ) {
+      logger.debug(
+        `Media '${media_title}' contains excluded keyword, skipping auto approve`
+      );
+      return false;
+    }
+
+    if (
+      excluded_genres &&
+      media.genres.some((genre) => {
+        return excluded_genres.some((e) => e === genre.id);
+      })
+    ) {
+      logger.debug(
+        `Media '${media_title}' contains excluded genre, skipping auto approve`
+      );
+      return false;
+    }
+
+    if (
+      allowed_languages &&
+      allowed_languages.includes(media.original_language.toLowerCase())
+    ) {
+      logger.debug(
+        `Media '${media_title}' contains excluded language, skipping auto approve`
+      );
+      return false;
+    }
+
+    return true;
   }
 
   @PrimaryGeneratedColumn()

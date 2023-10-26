@@ -514,77 +514,89 @@ const UserGeneralSettings = () => {
                   </div>
                 </div>
               )}
-
-              {user?.userType === UserType.LOCAL && (
-                <div
-                  role="group"
-                  aria-labelledby="group-label"
-                  className="form-group"
-                >
-                  <div className="form-row">
-                    <span id="group-label" className="group-label">
-                      {intl.formatMessage(messages.watchlist)}
-                    </span>
-                    <div className="form-input-area">
-                      <div className="max-w-lg">
-                        <label htmlFor="watchlistAuth" className="text-label">
-                          <span>
-                            {intl.formatMessage(messages.watchlistAuth)}
-                          </span>
-                          <span className="label-tip">
-                            {intl.formatMessage(
-                              messages.watchlistAuthDescription
-                            )}
-                          </span>
-                        </label>
-                        <div className="relative mb-6 flex">
-                          <Auth />
-                        </div>
-
+              {user?.userType === UserType.LOCAL &&
+                hasPermission(
+                  [
+                    Permission.AUTO_REQUEST,
+                    Permission.AUTO_REQUEST_MOVIE,
+                    Permission.AUTO_REQUEST_TV,
+                  ],
+                  { type: 'or' }
+                ) && (
+                  <div
+                    role="group"
+                    aria-labelledby="group-label"
+                    className="form-group"
+                  >
+                    <div className="form-row">
+                      <span id="group-label" className="group-label">
+                        {intl.formatMessage(messages.watchlist)}
+                      </span>
+                      <div className="form-input-area">
                         <div className="max-w-lg">
-                          <label htmlFor="watchlistUrl" className="text-label">
+                          <label htmlFor="watchlistAuth" className="text-label">
                             <span>
-                              {intl.formatMessage(messages.watchlistUrl)}
+                              {intl.formatMessage(messages.watchlistAuth)}
                             </span>
                             <span className="label-tip">
                               {intl.formatMessage(
-                                messages.watchlistUrldescription,
-                                {
-                                  PlexWatchlistFeedLink: (
-                                    msg: React.ReactNode
-                                  ) => (
-                                    <a
-                                      href="https://app.plex.tv/desktop/#!/settings/watchlist"
-                                      className="text-white transition duration-300 hover:underline"
-                                      target="_blank"
-                                      rel="noreferrer"
-                                    >
-                                      {msg}
-                                    </a>
-                                  ),
-                                }
+                                messages.watchlistAuthDescription
                               )}
                             </span>
                           </label>
-                          <div className="form-input-field mt-3">
-                            <Field
-                              id="watchlistUrl"
-                              name="watchlistUrl"
-                              type="text"
-                              placeholder={values.watchlistUrl}
-                            />
+                          <div className="relative mb-6 flex">
+                            <Auth />
                           </div>
-                          {errors.watchlistUrl &&
-                            touched.watchlistUrl &&
-                            typeof errors.watchlistUrl === 'string' && (
-                              <div className="error">{errors.watchlistUrl}</div>
-                            )}
+
+                          <div className="max-w-lg">
+                            <label
+                              htmlFor="watchlistUrl"
+                              className="text-label"
+                            >
+                              <span>
+                                {intl.formatMessage(messages.watchlistUrl)}
+                              </span>
+                              <span className="label-tip">
+                                {intl.formatMessage(
+                                  messages.watchlistUrldescription,
+                                  {
+                                    PlexWatchlistFeedLink: (
+                                      msg: React.ReactNode
+                                    ) => (
+                                      <a
+                                        href="https://app.plex.tv/desktop/#!/settings/watchlist"
+                                        className="text-white transition duration-300 hover:underline"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                      >
+                                        {msg}
+                                      </a>
+                                    ),
+                                  }
+                                )}
+                              </span>
+                            </label>
+                            <div className="form-input-field mt-3">
+                              <Field
+                                id="watchlistUrl"
+                                name="watchlistUrl"
+                                type="text"
+                                placeholder={values.watchlistUrl}
+                              />
+                            </div>
+                            {errors.watchlistUrl &&
+                              touched.watchlistUrl &&
+                              typeof errors.watchlistUrl === 'string' && (
+                                <div className="error">
+                                  {errors.watchlistUrl}
+                                </div>
+                              )}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
               <div className="actions">
                 <div className="flex justify-end">
