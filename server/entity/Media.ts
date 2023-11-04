@@ -47,6 +47,30 @@ class Media {
     }
   }
 
+public static async getRelatedMediaByImdb(
+    imdbIds: number | number[]
+  ): Promise<Media[]> {
+    const mediaRepository = getRepository(Media);
+
+    try {
+      let finalIds: number[];
+      if (!Array.isArray(imdbIds)) {
+        finalIds = [imdbIds];
+      } else {
+        finalIds = imdbIds;
+      }
+
+      const media = await mediaRepository.find({
+        where: { imdbId: In(finalIds) },
+      });
+
+      return media;
+    } catch (e) {
+      logger.error(e.message);
+      return [];
+    }
+  }
+
   public static async getMedia(
     id: number,
     mediaType: MediaType
