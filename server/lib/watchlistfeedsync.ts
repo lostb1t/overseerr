@@ -81,8 +81,8 @@ class WatchlistFeedSync extends ExternalAPI {
 
     const response = await this.getWatchlist(user.watchlist.url);
 
-    const mediaItems = await Media.getRelatedMedia(
-      response.items.map((i) => i.tmdbId)
+    const mediaItems = await Media.getRelatedMediaByImdb(
+      response.items.map((i) => i.imdb)
     );
 
     const unavailableItems = response.items.filter(
@@ -210,7 +210,7 @@ class WatchlistFeedSync extends ExternalAPI {
           }
 
           return {
-            tmdbId: guids['tmdb'] ?? 0,
+            tmdbId: guids.imdb ?? 0,
             tvdbId: guids.tvdb ?? undefined,
             title: item.title,
             type: item.category,
