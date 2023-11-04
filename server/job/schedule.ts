@@ -6,7 +6,6 @@ import { radarrScanner } from '@server/lib/scanners/radarr';
 import { sonarrScanner } from '@server/lib/scanners/sonarr';
 import type { JobId } from '@server/lib/settings';
 import { getSettings } from '@server/lib/settings';
-import watchlistFeedSync from '@server/lib/watchlistfeedsync';
 import watchlistSync from '@server/lib/watchlistsync';
 import logger from '@server/logger';
 import random from 'lodash/random';
@@ -88,21 +87,21 @@ export const startJobs = (): void => {
   scheduledJobs.push(watchlistSyncJob);
 
   // Watchlist Feed Sync
-  const watchlistFeedSyncJob: ScheduledJob = {
-    id: 'plex-watchlist-feed-sync',
-    name: 'Plex Watchlist Feed Sync',
-    type: 'process',
-    interval: 'minutes',
-    cronSchedule: jobs['plex-watchlist-feed-sync'].schedule,
-    job: schedule.scheduleJob(jobs['plex-watchlist-feed-sync'].schedule, () => {
-      logger.info('Starting scheduled job: Plex Watchlist Feed Sync', {
-        label: 'Jobs',
-      });
-      watchlistFeedSync.syncWatchlist();
-    }),
-  };
+  // const watchlistFeedSyncJob: ScheduledJob = {
+  //   id: 'plex-watchlist-feed-sync',
+  //   name: 'Plex Watchlist Feed Sync',
+  //   type: 'process',
+  //   interval: 'minutes',
+  //   cronSchedule: jobs['plex-watchlist-feed-sync'].schedule,
+  //   job: schedule.scheduleJob(jobs['plex-watchlist-feed-sync'].schedule, () => {
+  //     logger.info('Starting scheduled job: Plex Watchlist Feed Sync', {
+  //       label: 'Jobs',
+  //     });
+  //     watchlistFeedSync.syncWatchlist();
+  //   }),
+  // };
 
-  scheduledJobs.push(watchlistFeedSyncJob);
+  // scheduledJobs.push(watchlistFeedSyncJob);
 
   // Run full radarr scan every 24 hours
   scheduledJobs.push({

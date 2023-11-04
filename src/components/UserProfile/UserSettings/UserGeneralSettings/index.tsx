@@ -548,7 +548,7 @@ const UserGeneralSettings = () => {
                             <Auth />
                           </div>
 
-                          <div className="max-w-lg">
+                          {/* <div className="max-w-lg">
                             <label
                               htmlFor="watchlistUrl"
                               className="text-label"
@@ -591,7 +591,7 @@ const UserGeneralSettings = () => {
                                   {errors.watchlistUrl}
                                 </div>
                               )}
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     </div>
