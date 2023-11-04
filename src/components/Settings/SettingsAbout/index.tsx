@@ -106,7 +106,7 @@ const SettingsAbout = () => {
                   href={
                     data.version.startsWith('develop-')
                       ? `https://github.com/sct/overseerr/compare/${status.commitTag}...develop`
-                      : 'https://github.com/users/sarendsen/packages/container/package/overseer'
+                      : 'https://github.com/users/lostb1t/packages/container/package/overseer'
                   }
                   target="_blank"
                   rel="noopener noreferrer"
@@ -123,7 +123,7 @@ const SettingsAbout = () => {
                   href={
                     data.version.startsWith('develop-')
                       ? 'https://github.com/sct/overseerr/commits/develop'
-                      : 'https://github.com/users/sarendsen/packages/container/package/overseerr'
+                      : 'https://github.com/users/lostb1t/packages/container/package/overseerr'
                   }
                   target="_blank"
                   rel="noopener noreferrer"

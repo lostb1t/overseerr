@@ -111,7 +111,7 @@ class GithubAPI extends ExternalAPI {
   } = {}): Promise<GithubCommit[]> {
     try {
       const data = await this.get<GithubCommit[]>(
-        '/repos/sarendsen/overseerr/commits',
+        '/repos/lostb1t/overseerr/commits',
         {
           params: {
             per_page: take,
@@ -136,7 +136,7 @@ class GithubAPI extends ExternalAPI {
     take?: number;
   } = {}): Promise<any> {
     try {
-      const data = await this.get<any>('/repos/sarendsen/overseerr/tags', {
+      const data = await this.get<any>('/repos/lostb1t/overseerr/tags', {
         params: {
           per_page: take,
         },
