@@ -101,8 +101,8 @@ class WatchlistFeedSync extends ExternalAPI {
     // await Promise.all(
     //   unavailableItems.map(async (mediaItem) => {
     // NOTE: We cannot run this in parallel because quotas become stale
-    for (const mi of unavailableItems) {
-      const mediaItem = await mi;
+    for (const mediaItem of unavailableItems) {
+      //const mediaItem = await mi;
       try {
         logger.info("Creating media request from user's Plex Watchlist", {
           label: 'Watchlist Feed Sync',
@@ -204,23 +204,31 @@ class WatchlistFeedSync extends ExternalAPI {
         response_items = response_items.concat(response.items);
       }
 
-      const items = response_items.map(
-        async (item: { title: any; category: any; guids: any }) => {
+      const items = response_items.flatMap(
+        (item: { title: any; category: any; guids: any }) => {
           const guids = {} as any;
           for (const i in item.guids) {
             const s = item.guids[i].split('://');
             guids[s[0]] = s[1];
           }
-
-          if (guids.imdb && !guids.tmdb) {
-            const tmdbMedia = await tmdb.getMediaByImdbId(guids.imdb);
-            guids.tmdb = tmdbMedia.id;
+          
+          if (!guids.tmdb) {
+            logger.debug('Missing tmdbId skipping', {
+              label: 'Watchlist Feed Sync',
+              mediaTitle: title,
+            });
+            return []
           }
 
-          if (guids.tvdb && !guids.tmdb) {
-            const tmdbMedia = await tmdb.getShowByTvdbId(guids.tvdb);
-            guids.tmdb = tmdbMedia.id;
-          }
+          //if (guids.imdb && !guids.tmdb) {
+          //  const tmdbMedia = await tmdb.getMediaByImdbId(guids.imdb);
+          //  guids.tmdb = tmdbMedia.id;
+          //}
+
+          //if (guids.tvdb && !guids.tmdb) {
+          //  const tmdbMedia = await tmdb.getShowByTvdbId(guids.tvdb);
+          //  guids.tmdb = tmdbMedia.id;
+          //}
 
           return {
             tmdbId: guids.tmdb ?? undefined,
