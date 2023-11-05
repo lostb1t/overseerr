@@ -97,7 +97,7 @@ class WatchlistFeedSync extends ExternalAPI {
         )
     );
     
-    const error = false;
+    let error = false;
     // await Promise.all(
     //   unavailableItems.map(async (mediaItem) => {
     // NOTE: We cannot run this in parallel because quotas become stale
