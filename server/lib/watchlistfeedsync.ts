@@ -105,7 +105,7 @@ class WatchlistFeedSync extends ExternalAPI {
       const mediaItem = await mi;
       try {
         logger.info("Creating media request from user's Plex Watchlist", {
-          label: 'Watchlist Sync',
+          label: 'Watchlist Feed Sync',
           userId: user.id,
           mediaTitle: mediaItem.title,
         });
@@ -160,7 +160,7 @@ class WatchlistFeedSync extends ExternalAPI {
           case QuotaRestrictedError:
           case NoSeasonsAvailableError:
             logger.debug('Failed to create media request from watchlist', {
-              label: 'Watchlist Sync',
+              label: 'Watchlist Feed Sync',
               userId: user.id,
               mediaTitle: mediaItem.title,
               errorMessage: e.message,
@@ -168,7 +168,7 @@ class WatchlistFeedSync extends ExternalAPI {
             break;
           default:
             logger.error('Failed to create media request from watchlist', {
-              label: 'Watchlist Sync',
+              label: 'Watchlist Feed Sync',
               userId: user.id,
               mediaTitle: mediaItem.title,
               errorMessage: e.message,
