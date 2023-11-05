@@ -215,7 +215,7 @@ class WatchlistFeedSync extends ExternalAPI {
           if (!guids.tmdb) {
             logger.debug('Missing tmdbId skipping', {
               label: 'Watchlist Feed Sync',
-              mediaTitle: title,
+              mediaTitle: item.title,
             });
             return []
           }
