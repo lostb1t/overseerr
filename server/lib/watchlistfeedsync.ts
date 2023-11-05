@@ -96,7 +96,8 @@ class WatchlistFeedSync extends ExternalAPI {
               (m.mediaType === 'tv' && m.status === MediaStatus.AVAILABLE))
         )
     );
-
+    
+    const error = false;
     // await Promise.all(
     //   unavailableItems.map(async (mediaItem) => {
     // NOTE: We cannot run this in parallel because quotas become stale
@@ -148,7 +149,7 @@ class WatchlistFeedSync extends ExternalAPI {
         if (!(e instanceof Error)) {
           return;
         }
-
+        error = true;
         switch (e.constructor) {
           // During watchlist sync, these errors aren't necessarily
           // a problem with Overseerr. Since we are auto syncing these constantly, it's
@@ -173,17 +174,15 @@ class WatchlistFeedSync extends ExternalAPI {
               errorMessage: e.message,
             });
         }
-
-        // return so etag is not saved
-        return;
       }
     }
     //})
     //);
-
-    const userRepository = getRepository(User);
-    user.watchlist.etag = head.headers.etag;
-    userRepository.save(user);
+    if (!error) {
+      const userRepository = getRepository(User);
+      user.watchlist.etag = head.headers.etag;
+      userRepository.save(user);
+    }
   }
   public async getWatchlist(url: string): Promise<{
     items: PlexWatchlistItem[];
