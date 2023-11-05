@@ -415,7 +415,7 @@ class Settings {
           schedule: '0 */10 * * * *',
         },
         'plex-watchlist-feed-sync': {
-          schedule: '0 */10 * * * *',
+          schedule: '0 */30 * * * *',
         },
         'radarr-scan': {
           schedule: '0 0 4 * * *',

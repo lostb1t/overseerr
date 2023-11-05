@@ -56,10 +56,10 @@ const messages = defineMessages({
   plexwatchlistsyncseries: 'Auto-Request Series',
   plexwatchlistsyncseriestip:
     'Automatically request series on your <PlexWatchlistSupportLink>Plex Watchlist</PlexWatchlistSupportLink>',
-  watchlistUrl: 'Watchlist feed',
+  watchlistUrl: 'Watchlist friends feed',
   watchlist: 'Watchlist',
   watchlistUrldescription:
-    'You can find your feed <PlexWatchlistFeedLink>here</PlexWatchlistFeedLink>',
+    'You can find your friend feed <PlexWatchlistFeedLink>here</PlexWatchlistFeedLink>',
   validationWatchlistUrl: 'You must provide a valid url',
   watchlistAuth: 'Plex Auth',
   watchlistAuthDescription:
@@ -548,7 +548,7 @@ const UserGeneralSettings = () => {
                             <Auth />
                           </div>
 
-                          {/* <div className="max-w-lg">
+                          <div className="max-w-lg">
                             <label
                               htmlFor="watchlistUrl"
                               className="text-label"
@@ -591,7 +591,7 @@ const UserGeneralSettings = () => {
                                   {errors.watchlistUrl}
                                 </div>
                               )}
-                          </div> */}
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ExternalAPI from '@server/api/externalapi';
+import TheMovieDb from '@server/api/themoviedb';
 import { MediaStatus, MediaType } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
 import Media from '@server/entity/Media';
@@ -99,7 +100,8 @@ class WatchlistFeedSync extends ExternalAPI {
     // await Promise.all(
     //   unavailableItems.map(async (mediaItem) => {
     // NOTE: We cannot run this in parallel because quotas become stale
-    for (const mediaItem of unavailableItems) {
+    for (const mi of unavailableItems) {
+      const mediaItem = await mi;
       try {
         logger.info("Creating media request from user's Plex Watchlist", {
           label: 'Watchlist Sync',
@@ -171,6 +173,9 @@ class WatchlistFeedSync extends ExternalAPI {
               errorMessage: e.message,
             });
         }
+
+        // return so etag is not saved
+        return;
       }
     }
     //})
@@ -183,6 +188,7 @@ class WatchlistFeedSync extends ExternalAPI {
   public async getWatchlist(url: string): Promise<{
     items: PlexWatchlistItem[];
   }> {
+    const tmdb = new TheMovieDb();
     try {
       const path = url.replace('https://rss.plex.tv', '');
       const response: any = await this.getRolling(path, undefined, 300);
@@ -200,17 +206,25 @@ class WatchlistFeedSync extends ExternalAPI {
       }
 
       const items = response_items.map(
-        (item: { title: any; category: any; guids: any }) => {
+        async (item: { title: any; category: any; guids: any }) => {
           const guids = {} as any;
           for (const i in item.guids) {
             const s = item.guids[i].split('://');
-            // guids[s[0]] = s[1];
-            // console.log(guid);
             guids[s[0]] = s[1];
           }
 
+          if (guids.imdb && !guids.tmdb) {
+            const tmdbMedia = await tmdb.getMediaByImdbId(guids.imdb);
+            guids.tmdb = tmdbMedia.id;
+          }
+
+          if (guids.tvdb && !guids.tmdb) {
+            const tmdbMedia = await tmdb.getShowByTvdbId(guids.tvdb);
+            guids.tmdb = tmdbMedia.id;
+          }
+
           return {
-            tmdbId: guids['tmdb'] ?? 0,
+            tmdbId: guids.tmdb ?? undefined,
             tvdbId: guids.tvdb ?? undefined,
             title: item.title,
             type: item.category,
