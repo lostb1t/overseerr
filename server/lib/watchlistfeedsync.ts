@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ExternalAPI from '@server/api/externalapi';
-import TheMovieDb from '@server/api/themoviedb';
 import { MediaStatus, MediaType } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
 import Media from '@server/entity/Media';
@@ -96,8 +95,9 @@ class WatchlistFeedSync extends ExternalAPI {
               (m.mediaType === 'tv' && m.status === MediaStatus.AVAILABLE))
         )
     );
-    
+
     let error = false;
+
     // await Promise.all(
     //   unavailableItems.map(async (mediaItem) => {
     // NOTE: We cannot run this in parallel because quotas become stale
@@ -187,7 +187,7 @@ class WatchlistFeedSync extends ExternalAPI {
   public async getWatchlist(url: string): Promise<{
     items: PlexWatchlistItem[];
   }> {
-    const tmdb = new TheMovieDb();
+    // const tmdb = new TheMovieDb();
     try {
       const path = url.replace('https://rss.plex.tv', '');
       const response: any = await this.getRolling(path, undefined, 300);
@@ -211,13 +211,13 @@ class WatchlistFeedSync extends ExternalAPI {
             const s = item.guids[i].split('://');
             guids[s[0]] = s[1];
           }
-          
+
           if (!guids.tmdb) {
             logger.debug('Missing tmdbId skipping', {
               label: 'Watchlist Feed Sync',
               mediaTitle: item.title,
             });
-            return []
+            return [];
           }
 
           //if (guids.imdb && !guids.tmdb) {
@@ -231,8 +231,8 @@ class WatchlistFeedSync extends ExternalAPI {
           //}
 
           return {
-            tmdbId: guids.tmdb ?? undefined,
-            tvdbId: guids.tvdb ?? undefined,
+            tmdbId: parseInt(guids.tmdb) ?? undefined,
+            tvdbId: parseInt(guids.tvdb) ?? undefined,
             title: item.title,
             type: item.category,
           };
