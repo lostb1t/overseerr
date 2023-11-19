@@ -413,7 +413,7 @@ export class MediaRequest {
 
     if (
       allowed_languages &&
-      allowed_languages.includes(media.original_language.toLowerCase())
+      !allowed_languages.includes(media.original_language.toLowerCase())
     ) {
       logger.debug(
         `Media '${media_title}' contains excluded language, skipping auto approve`
